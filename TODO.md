@@ -29,7 +29,7 @@ Each of these waits for the maintainer's go-ahead.
 - [x] Push `main` to GitHub
 - [x] Confirm the CI workflow passes
 - [x] Tag `v0.1.0`
-- [ ] Review the draft Release and publish it
+- [x] Review the draft Release and publish it
 
 ## Later
 
