@@ -11,7 +11,7 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 ## Build v0.1.0
 
 - [ ] Task 1: Toolchain, scaffold and glass check
-- [ ] Task 2: Markdown rendering
+- [x] Task 2: Markdown rendering
 - [ ] Task 3: Paths and links
 - [ ] Task 4: Outline
 - [ ] Task 5: Rust backend
