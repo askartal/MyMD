@@ -26,7 +26,7 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 
 Each of these waits for the maintainer's go-ahead.
 
-- [ ] Push `main` to GitHub
+- [x] Push `main` to GitHub
 - [ ] Confirm the CI workflow passes
 - [ ] Tag `v0.1.0`
 - [ ] Review the draft Release and publish it
