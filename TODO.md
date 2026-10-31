@@ -10,7 +10,7 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 
 ## Build v0.1.0
 
-- [ ] Task 1: Toolchain, scaffold and glass check
+- [x] Task 1: Toolchain, scaffold and glass check
 - [x] Task 2: Markdown rendering
 - [x] Task 3: Paths and links
 - [x] Task 4: Outline

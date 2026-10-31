@@ -31,8 +31,8 @@ Use `superpowers:executing-plans` to continue the plan. The ledger at `.superpow
 | Git | 2.56.0 |
 | WebView2 | 156.0.4314.50 |
 | GitHub CLI | Signed in as `askartal` |
-| Rust | Not installed yet (Task 1) |
-| C++ Build Tools | Not installed yet (Task 1) |
+| Rust | 1.99.1, stable MSVC. Open a new shell if `cargo` isn't found |
+| C++ Build Tools | Visual Studio Build Tools 2022 |
 
 ## Known risks
 
@@ -43,4 +43,4 @@ Use `superpowers:executing-plans` to continue the plan. The ledger at `.superpow
 
 ## Task results
 
-Nothing recorded yet.
+**Task 1 (glass check, in dark mode on Windows 11 build 26300).** Acrylic renders: the desktop is blurred behind the window. The native title bar shows the same glass, with no seam. Smoothness while dragging and resizing hasn't been confirmed by a person yet, and this build is one where Acrylic is known to lag.

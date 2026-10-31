@@ -28,7 +28,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 007: Acrylic for the glass, with Mica as the fallback
 
-**Accepted, 2026-10-31.** Acrylic gives real frosted glass by blurring what's behind the window. It can lag on some Windows builds, so Task 1 tests it. Mica is a one-word configuration change. Performance on the development PC hasn't been tested yet.
+**Accepted, 2026-10-31.** Acrylic gives real frosted glass by blurring what's behind the window. It can lag on some Windows builds, so Task 1 tests it. Mica is a one-word configuration change. On the development PC (Windows 11 build 26300), Acrylic renders correctly and the title bar shows the same glass. Smoothness while dragging and resizing needs a person to judge, so it stays open until they confirm it.
 
 ## 008: Solid reading panel
 
