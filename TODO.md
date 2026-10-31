@@ -16,11 +16,11 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 - [x] Task 4: Outline
 - [x] Task 5: Rust backend
 - [x] Task 6: Bridge, fixtures and async helpers
-- [ ] Task 7: Shell, styles and opening documents
-- [ ] Task 8: Sidebar
-- [ ] Task 9: Find in page
-- [ ] Task 10: Live refresh and error states
-- [ ] Task 11: Packaging, public repository files and final verification
+- [x] Task 7: Shell, styles and opening documents
+- [x] Task 8: Sidebar
+- [x] Task 9: Find in page
+- [x] Task 10: Live refresh and error states
+- [x] Task 11: Packaging, public repository files and final verification
 
 ## Publish
 

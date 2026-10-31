@@ -44,6 +44,10 @@
   text-wrap: balance;
 }
 
+.prose :is(h1, h2, h3, h4, h5, h6) :is(em, i) {
+  font-style: normal;
+}
+
 .prose h1 {
   margin-block: var(--s-10) var(--s-5);
   font-size: var(--fs-display);

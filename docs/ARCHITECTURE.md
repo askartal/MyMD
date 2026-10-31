@@ -4,7 +4,7 @@ MyMD is a Tauri 2 app. A small Rust layer reads files and watches folders, and a
 
 ## File layout
 
-This is the intended layout. Most of it is created by the [implementation plan](superpowers/plans/2026-10-31-mymd-markdown-viewer.md), so check `HANDOFF.md` for what exists today.
+This is the current layout.
 
 ```text
 MyMD/
@@ -26,7 +26,8 @@ MyMD/
 │   │   ├── links.ts           Link classification and Windows paths
 │   │   ├── notice.ts          Error messages
 │   │   ├── outline.ts         Heading ids and the outline
-│   │   └── render.ts          Markdown to sanitized HTML
+│   │   ├── render.ts          Markdown to sanitized HTML
+│   │   └── tables.ts          Scrolling wrappers for tables
 │   ├── ui/                    Interface components
 │   │   ├── find.ts            Find in page
 │   │   └── sidebar.ts         Files and Outline views
@@ -71,7 +72,7 @@ Tests sit beside the code they cover, as `*.test.ts`. Rust tests live in `src-ta
 
 1. A path arrives from launch, a second launch, the file picker, a dropped file, a link or the sidebar.
 2. `main.ts` reads it through `bridge.ts`, ignoring any older read still in flight.
-3. `render.ts` produces sanitized HTML in a detached template.
+3. `render.ts` produces sanitized HTML in a detached template, and `tables.ts` wraps its tables.
 4. `images.ts` rewrites local image sources, and Rust allows those files in the asset scope.
 5. The HTML replaces the document, `outline.ts` assigns heading ids, and `sidebar.ts` updates.
 6. `bridge.ts` starts watching the folder. A `folder-changed` event that includes the current file repeats steps 2 to 5 and keeps the scroll position.

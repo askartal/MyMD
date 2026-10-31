@@ -4,7 +4,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 001: Tauri 2 rather than Electron
 
-**Accepted, 2026-10-31.** The installer should be around 10 MB, and it uses the WebView2 runtime that Windows keeps patched, so the app doesn't ship its own browser. The cost is a one-time Rust and C++ Build Tools install for anyone building from source.
+**Accepted, 2026-10-31.** The `0.1.0` installer is 2.4 MiB, because the app uses the WebView2 runtime that Windows keeps patched rather than shipping its own browser. The cost is a one-time Rust and C++ Build Tools install for anyone building from source.
 
 ## 002: No UI framework
 
@@ -69,3 +69,11 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 ## 017: Documents can't reach network paths
 
 **Accepted, 2026-10-31.** Images load as soon as a document opens, and Windows answers a network path by contacting that host with the user's identity. So a path written in a document, such as `//host/a.png`, is refused for both images and links. Relative paths still work when the document itself is on a network share.
+
+## 018: The sidebar's start state is set once per document
+
+**Accepted, 2026-10-31.** A live refresh must never move the page, so the rule that hides the sidebar for a lone file runs only when a different document opens. A file that fails to open follows the remembered choice, so the other files in its folder stay in reach. The cost is that a folder gaining a second file keeps a hidden sidebar hidden until `Ctrl+B`.
+
+## 019: Find has an input and a count, with no buttons
+
+**Accepted, 2026-10-31.** Find opens from the keyboard, so `Enter`, `Shift+Enter` and `Esc` cover it, and fewer controls keep the top bar quiet.
