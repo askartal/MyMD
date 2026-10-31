@@ -3,9 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <title>MyMD</title>
   </head>
   <body>
+    <div id="app">
+      <aside id="sidebar" aria-label="Files and outline" hidden></aside>
+      <main id="panel">
+        <header id="topbar">
+          <button id="toggle-sidebar" class="icon-button" type="button" aria-label="Toggle sidebar" aria-controls="sidebar">
+            <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2.75" y="3.75" width="14.5" height="12.5" rx="3" />
+              <path d="M7.75 3.75v12.5" />
+            </svg>
+          </button>
+          <span id="doc-name"></span>
+          <span id="doc-status" role="status"></span>
+          <div id="find-slot"></div>
+        </header>
+        <div id="scroller" role="region" aria-label="Document" tabindex="0">
+          <article id="doc" class="prose" hidden></article>
+          <section id="notice" aria-live="polite">
+            <svg class="notice-icon" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 5.5h15.5L38 15v24a3.5 3.5 0 0 1-3.5 3.5h-21A3.5 3.5 0 0 1 10 39V9a3.5 3.5 0 0 1 3-3.5Z" />
+              <path d="M28 5.5V15h10" />
+              <path d="M17 24h14M17 31h9" />
+            </svg>
+            <p id="notice-title">Open a Markdown file to start reading.</p>
+            <p id="notice-body" hidden></p>
+            <button id="notice-open" class="button" type="button">Open file</button>
+            <p class="chips">
+              <span class="chip">Ctrl O to open</span>
+              <span class="chip">Drop a file here</span>
+            </p>
+          </section>
+        </div>
+      </main>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,0 +1,67 @@
+.prose code {
+  padding: var(--s-px) var(--s-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  background: var(--surface-2);
+  border-radius: var(--r-xs);
+}
+
+.prose pre {
+  padding: var(--s-3) var(--s-4);
+  overflow-x: auto;
+  line-height: var(--lh-code);
+  tab-size: var(--tab-size);
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-tag {
+  color: var(--tag-violet);
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-template-tag {
+  color: var(--tag-green);
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-attr,
+.hljs-attribute,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: var(--tag-blue);
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-built_in,
+.hljs-type,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-deletion {
+  color: var(--tag-amber);
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-meta {
+  color: var(--text-2);
+}
+
+.hljs-strong {
+  font-weight: var(--fw-semi);
+}

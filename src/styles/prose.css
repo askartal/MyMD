@@ -1,0 +1,221 @@
+.prose {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding: var(--s-6) var(--s-6) var(--s-16);
+  font-size: var(--fs-read);
+  line-height: var(--lh-read);
+  overflow-wrap: break-word;
+  cursor: auto;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose pre,
+.prose blockquote,
+.prose details,
+.prose .table-wrap {
+  margin-block: 0 var(--s-4);
+}
+
+.prose p,
+.prose li {
+  text-wrap: pretty;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  scroll-margin-top: var(--s-6);
+  line-height: var(--lh-title);
+  font-style: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.prose h1 {
+  margin-block: var(--s-10) var(--s-5);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-display);
+}
+
+.prose h2 {
+  margin-block: var(--s-10) var(--s-3);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-title);
+}
+
+.prose h3 {
+  margin-block: var(--s-8) var(--s-2);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semi);
+}
+
+.prose h4,
+.prose h5,
+.prose h6 {
+  margin-block: var(--s-6) var(--s-2);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semi);
+}
+
+.prose a {
+  color: var(--peri-ink);
+  border-radius: var(--r-xs);
+  text-decoration-line: underline;
+  text-decoration-color: var(--border-strong);
+  text-decoration-thickness: var(--s-px);
+  text-underline-offset: var(--s-1);
+  transition: text-decoration-color var(--t-fast) var(--ease);
+}
+
+.prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+.prose a:active {
+  color: var(--text);
+}
+
+.prose ul,
+.prose ol {
+  padding-inline-start: var(--s-6);
+}
+
+.prose li + li,
+.prose li > ul,
+.prose li > ol {
+  margin-top: var(--s-1);
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-bottom: 0;
+}
+
+.prose li > p {
+  margin-bottom: var(--s-2);
+}
+
+.prose li:has(> input[type="checkbox"]),
+.prose li:has(> p > input[type="checkbox"]) {
+  position: relative;
+  margin-inline-start: calc(-1 * var(--s-6));
+  padding-inline-start: var(--s-6);
+  list-style: none;
+}
+
+.prose li > input[type="checkbox"],
+.prose li > p > input[type="checkbox"] {
+  position: absolute;
+  inset-block-start: var(--check-top);
+  inset-inline-start: 0;
+  display: grid;
+  place-items: center;
+  width: var(--check);
+  height: var(--check);
+  margin: 0;
+  border: var(--check-line) solid var(--border-strong);
+  border-radius: var(--r-full);
+  appearance: none;
+}
+
+.prose li > input[type="checkbox"]:checked,
+.prose li > p > input[type="checkbox"]:checked {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.prose li > input[type="checkbox"]:checked::after,
+.prose li > p > input[type="checkbox"]:checked::after {
+  width: var(--s-1);
+  height: var(--s-2);
+  border: solid var(--surface);
+  border-width: 0 var(--check-line) var(--check-line) 0;
+  content: "";
+  transform: translateY(calc(-1 * var(--s-px))) rotate(45deg);
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: var(--s-3) var(--s-4);
+  color: var(--text-2);
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+}
+
+.prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.prose hr {
+  height: var(--s-px);
+  margin-block: var(--s-8);
+  background: var(--border);
+  border: 0;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--r-md);
+}
+
+.prose .img-missing {
+  display: inline-block;
+  padding: var(--s-1) var(--s-3);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  background: var(--surface-2);
+  border-radius: var(--r-sm);
+}
+
+.prose .table-wrap {
+  overflow-x: auto;
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.prose table {
+  min-width: 100%;
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+  border-collapse: collapse;
+}
+
+.prose th,
+.prose td {
+  padding: var(--s-2) var(--s-3);
+  text-align: start;
+  vertical-align: top;
+  border-bottom: var(--s-px) solid var(--border);
+}
+
+.prose th {
+  font-weight: var(--fw-semi);
+  white-space: nowrap;
+  border-bottom-color: var(--border-strong);
+}
+
+.prose summary {
+  cursor: default;
+  border-radius: var(--r-xs);
+}
+
+.prose details[open] > summary {
+  margin-bottom: var(--s-2);
+}
