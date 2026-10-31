@@ -1,3 +1,7 @@
+export function linkNotice(name: string): string {
+  return `${name} couldn't be opened. Check the link.`;
+}
+
 export function noticeFor(error: unknown, name: string): { title: string; body: string } {
   if (error === 'missing') {
     return {

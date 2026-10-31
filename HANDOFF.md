@@ -7,18 +7,19 @@ Rewrite this file at the end of every session so the next one can start cold.
 ## Current state
 
 - All 11 plan tasks are built and committed on branch `build/v0.1.0`. `main` hasn't changed, and nothing has been pushed.
-- 107 TypeScript tests and 14 Rust tests pass, and `npm run build` and `npm run tauri build` both finish.
+- 149 TypeScript tests and 14 Rust tests pass, and `npm run build` and `npm run tauri build` both finish.
+- The whole-branch review is done, and its Critical and Important findings are fixed and tested. Deferred minors are under "Later" in `TODO.md`.
 - The installer is `MyMD_0.1.0_x64-setup.exe`, 2.4 MiB, and it's installed on the development PC.
 - `origin` is https://github.com/askartal/MyMD. The GitHub repository is public and empty.
 
 ## Next step
 
-1. Run the final whole-branch review, then one fix pass. The local ledger at `.superpowers/sdd/2026-10-31-mymd-markdown-viewer/progress.md` has every ruling. If it's gone, use `git log` and `docs/DECISIONS.md`.
-2. Use `superpowers:finishing-a-development-branch`.
+The build is finished. What's left waits on the maintainer.
 
 ## Waiting on the maintainer
 
 - Judge the items in "Checks only a person can make" below
+- Decide whether to rewrite local history before the first push: commit c3751eb has a local path containing the Windows user name, and a later commit removes it. It can't be undone once pushed.
 - Go-ahead to merge `build/v0.1.0` into `main`
 - Go-ahead for the first push, then the `v0.1.0` tag and publishing the draft Release
 
@@ -45,7 +46,7 @@ Rewrite this file at the end of every session so the next one can start cold.
 | C++ Build Tools | Visual Studio Build Tools 2022 |
 | Python | Not installed |
 
-In a Bash shell, add `/c/Users/Ali/.cargo/bin` to `PATH` if `cargo` isn't found. On Windows, run `npx` as `npx.cmd` from PowerShell.
+In a Bash shell, add `~/.cargo/bin` to `PATH` if `cargo` isn't found. On Windows, run `npx` as `npx.cmd` from PowerShell.
 
 The browser pane doesn't paint reliably while it's hidden, so layout captures are easier through headless Edge and the DevTools protocol.
 
@@ -54,7 +55,8 @@ The browser pane doesn't paint reliably while it's hidden, so layout captures ar
 - **Acrylic may lag** while dragging or resizing, and this Windows build is one where that's known to happen.
 - **The title bar has no tint.** It shows the Acrylic backdrop but not the app's `--glass` tint, so with a forced light theme over a dark wallpaper it reads darker than the window below it. If that looks wrong in real light mode, set `DWMWA_CAPTION_COLOR` from Rust, as the spec allows.
 - **SmartScreen warns on downloaded installers** because releases aren't code-signed. The README explains this.
-- **Images can shift a refreshed page.** Images without a set size load after the page swaps, so a save can briefly move the text below them.
+- **A live refresh waits for any load in flight.** A read that hangs, such as on a dead network share, holds back refreshes until it fails.
+- **A pathological document can freeze the window.** Rendering runs on the interface thread, and thousands of repeated `_a ` take many seconds. See "Later" in `TODO.md`.
 - **Don't run `create-tauri-app` in this folder.** It can clear a non-empty folder.
 
 ## Task results

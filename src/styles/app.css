@@ -88,9 +88,12 @@ html[data-shell="browser"] #app {
 }
 
 #doc-status {
-  flex: none;
+  min-width: 0;
+  overflow: hidden;
   color: var(--text-2);
   font-size: var(--fs-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #find-slot {

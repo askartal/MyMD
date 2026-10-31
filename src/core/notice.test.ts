@@ -1,5 +1,9 @@
 import { expect, it } from 'vitest';
-import { noticeFor } from './notice';
+import { linkNotice, noticeFor } from './notice';
+
+it('explains a link that leads nowhere', () => {
+  expect(linkNotice('a.md')).toBe("a.md couldn't be opened. Check the link.");
+});
 
 it('explains a moved file', () => {
   expect(noticeFor('missing', 'a.md')).toEqual({

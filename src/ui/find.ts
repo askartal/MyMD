@@ -27,7 +27,8 @@ function collectText(root: HTMLElement): { text: string; runs: TextRun[] } {
 // Whitespace matches loosely, because a paragraph wrapped in its source renders on one line.
 function queryPattern(query: string): RegExp {
   const literal = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
-  return new RegExp(literal, 'giu');
+  // Case folding doesn't link the Turkish i letters, so they share one class.
+  return new RegExp(literal.replace(/[iıIİ]/g, '[iıIİ]'), 'giu');
 }
 
 export function findRanges(root: HTMLElement, query: string): Range[] {
@@ -118,7 +119,8 @@ export class FindController {
 
   private update(): void {
     this.ranges = findRanges(this.root, this.query);
-    this.index = Math.min(this.index, this.ranges.length - 1);
+    const last = this.ranges.length - 1;
+    this.index = last < 0 ? -1 : Math.min(Math.max(this.index, 0), last);
     const matches = new Highlight();
     for (const range of this.ranges) matches.add(range);
     CSS.highlights.set(MATCHES, matches);

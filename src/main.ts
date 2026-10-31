@@ -7,7 +7,7 @@ import { createLatest, retryOnce } from './core/async';
 import { applyLocalImages } from './core/images';
 import { classifyLink, folderOf, isMarkdownPath, samePath } from './core/links';
 import { buildOutline, currentHeadingId, scrollToHeading, type OutlineItem } from './core/outline';
-import { noticeFor } from './core/notice';
+import { linkNotice, noticeFor } from './core/notice';
 import { renderMarkdown, stripFrontMatter } from './core/render';
 import { wrapTables } from './core/tables';
 import { bridge, type FileEntry } from './platform/bridge';
@@ -17,10 +17,11 @@ import { createSidebar, sidebarVisible } from './ui/sidebar';
 interface OpenOptions {
   keepScroll?: boolean;
   fragment?: string | null;
+  fromLink?: boolean;
 }
 
 const READ_RETRY_MS = 100;
-const UPDATED_MS = 4000;
+const STATUS_MS = 4000;
 const SIDEBAR_OPEN_KEY = 'mymd.sidebarOpen';
 const SIDEBAR_VIEW_KEY = 'mymd.sidebarView';
 const drawerQuery = window.matchMedia('(width < 768px)');
@@ -60,6 +61,8 @@ let sidebarOverride: boolean | null = null;
 let drawerOpen = false;
 let readingTop = 0;
 let statusTimer = 0;
+let loadsInFlight = 0;
+let waitingChanges: string[] = [];
 
 function recall(key: string): string | null {
   try {
@@ -172,9 +175,13 @@ function setStatus(text: string): void {
   docStatus.textContent = text;
 }
 
-function showUpdated(): void {
-  setStatus('Updated just now');
-  statusTimer = window.setTimeout(() => setStatus(''), UPDATED_MS);
+function showBriefly(text: string): void {
+  setStatus(text);
+  statusTimer = window.setTimeout(() => setStatus(''), STATUS_MS);
+}
+
+function fileNameOf(path: string): string {
+  return path.split(/[\\/]/).pop() ?? path;
 }
 
 function setCurrentDocument(path: string, name: string): boolean {
@@ -243,7 +250,7 @@ function showDocument({ data, content, files }: Awaited<ReturnType<typeof loadDo
 }
 
 function showFailure(path: string, error: unknown): void {
-  const name = path.split(/[\\/]/).pop() ?? path;
+  const name = fileNameOf(path);
   // With nothing to read, the sidebar follows the remembered choice so other files stay in reach.
   if (setCurrentDocument(path, name)) sidebarOverride = sidebarOpen;
   setStatus('');
@@ -254,17 +261,34 @@ function showFailure(path: string, error: unknown): void {
 }
 
 async function openDocument(path: string, options: OpenOptions = {}): Promise<void> {
+  loadsInFlight += 1;
   try {
     const loaded = await latest(() => loadDocument(path));
     if (loaded) showDocument(loaded, options);
   } catch (error) {
-    showFailure(path, error);
+    // With no history to go back through, a dead link leaves the reader on their page.
+    if (options.fromLink) showBriefly(linkNotice(fileNameOf(path)));
+    else showFailure(path, error);
+  } finally {
+    loadsInFlight -= 1;
+    if (loadsInFlight === 0 && waitingChanges.length > 0) {
+      const paths = waitingChanges;
+      waitingChanges = [];
+      handleFolderChange(paths);
+    }
   }
 }
 
 async function refreshDocument(path: string): Promise<void> {
   await openDocument(path, { keepScroll: true });
-  if (!doc.hidden && currentPath && samePath(currentPath, path)) showUpdated();
+  if (!doc.hidden && currentPath && samePath(currentPath, path)) showBriefly('Updated just now');
+}
+
+function handleFolderChange(paths: string[]): void {
+  const path = currentPath;
+  if (!path) return;
+  if (paths.some((changed) => samePath(changed, path))) void refreshDocument(path);
+  else void refreshFiles();
 }
 
 function openFirstMarkdown(paths: string[]): void {
@@ -282,7 +306,7 @@ function followLink(link: Element): void {
   const action = classifyLink(link.getAttribute('href') ?? '', currentPath);
   if (action.kind === 'anchor') scrollToHeading(doc, action.fragment);
   if (action.kind === 'external') void bridge.openExternal(action.url);
-  if (action.kind === 'document') void openDocument(action.path, { fragment: action.fragment });
+  if (action.kind === 'document') void openDocument(action.path, { fragment: action.fragment, fromLink: true });
 }
 
 function showMissingImage(image: HTMLImageElement): void {
@@ -368,11 +392,10 @@ window.addEventListener('contextmenu', (event) => {
 bridge.onOpenPath((path) => openFirstMarkdown([path]));
 bridge.onFileDrop(openFirstMarkdown);
 
+// Changes wait for any load in flight, so a save can't cancel a newer open and bursts coalesce.
 bridge.onFolderChanged((paths) => {
-  const path = currentPath;
-  if (!path) return;
-  if (paths.some((changed) => samePath(changed, path))) void refreshDocument(path);
-  else void refreshFiles();
+  if (loadsInFlight > 0) waitingChanges.push(...paths);
+  else handleFolderChange(paths);
 });
 
 async function start(): Promise<void> {

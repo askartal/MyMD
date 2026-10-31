@@ -12,12 +12,21 @@ const FILE_URL = /^file:\/\/\//i;
 const MARKDOWN = /\.(?:md|markdown)$/i;
 const NETWORK_PATH = /^[\\/]{2}/;
 
+// Each run decodes alone, so a literal % in a name can't stop the rest from decoding.
 function decode(text: string): string {
-  try {
-    return decodeURIComponent(text);
-  } catch {
-    return text;
-  }
+  return text.replace(/(?:%[0-9a-f]{2})+/gi, (run) => {
+    try {
+      return decodeURIComponent(run);
+    } catch {
+      return run;
+    }
+  });
+}
+
+// A network root is \\server\share, so a root-relative target can't name another host.
+function rootOf(path: string): string {
+  const slashed = path.replace(/\//g, '\\');
+  return /^\\\\[^\\]+\\[^\\]+/.exec(slashed)?.[0] ?? slashed.slice(0, 2);
 }
 
 // Network paths are refused so a document can't make Windows contact another host.
@@ -43,7 +52,7 @@ export function classifyLink(href: string, currentPath: string): LinkAction {
 export function resolvePath(target: string, currentPath: string): string {
   const slashed = target.replace(/\//g, '\\');
   const isAbsolute = /^[a-z]:\\/i.test(slashed) || NETWORK_PATH.test(slashed);
-  const base = slashed.startsWith('\\') ? currentPath.slice(0, 2) : folderOf(currentPath);
+  const base = slashed.startsWith('\\') ? rootOf(currentPath) : folderOf(currentPath);
   const full = isAbsolute ? slashed : `${base}\\${slashed}`;
   const prefix = NETWORK_PATH.test(full) ? '\\\\' : '';
   const parts: string[] = [];

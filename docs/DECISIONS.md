@@ -68,7 +68,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 017: Documents can't reach network paths
 
-**Accepted, 2026-10-31.** Images load as soon as a document opens, and Windows answers a network path by contacting that host with the user's identity. So a path written in a document, such as `//host/a.png`, is refused for both images and links. Relative paths still work when the document itself is on a network share.
+**Accepted, 2026-10-31.** Images load as soon as a document opens, and Windows answers a network path by contacting that host with the user's identity. So a path written in a document, such as `//host/a.png`, is refused for both images and links. Relative paths still work when the document itself is on a network share, and a root-relative path stays on that share.
 
 ## 018: The sidebar's start state is set once per document
 
@@ -77,3 +77,11 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 ## 019: Find has an input and a count, with no buttons
 
 **Accepted, 2026-10-31.** Find opens from the keyboard, so `Enter`, `Shift+Enter` and `Esc` cover it, and fewer controls keep the top bar quiet.
+
+## 020: A dead link keeps the page
+
+**Accepted, 2026-10-31.** There's no back button, so replacing the page with an error would strand the reader. A link that leads nowhere leaves the document in place and says so in the top bar. Files opened any other way still show the full notice.
+
+## 021: Drive paths and file URLs pass the sanitizer
+
+**Accepted, 2026-10-31.** The spec's link table includes absolute paths, and DOMPurify's default list strips them. The sanitizer now keeps drive paths and `file:///` URLs, and `classifyLink` and `localImagePath` decide what each one does. `file://host` is still removed.

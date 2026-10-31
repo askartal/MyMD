@@ -32,6 +32,11 @@ describe('findRanges', () => {
   it('finds every match in a long run of text nodes', () => {
     expect(findRanges(doc('<b>a</b><i>a</i>a<b>a</b>'), 'a')).toHaveLength(4);
   });
+  it('treats the Turkish i letters as one letter', () => {
+    expect(findRanges(doc('<p>İş planı</p>'), 'iş')).toHaveLength(1);
+    expect(findRanges(doc('<p>İstanbul</p>'), 'istanbul')).toHaveLength(1);
+    expect(findRanges(doc('<p>planı</p>'), 'PLANI')).toHaveLength(1);
+  });
 });
 
 describe('FindController', () => {
@@ -100,6 +105,16 @@ describe('FindController', () => {
     root.innerHTML = '<p>one two</p>';
     find.refresh();
     expect(onChange).toHaveBeenLastCalledWith(0, 1);
+  });
+  it('finds matches again after they all disappear', () => {
+    const find = new FindController(root, onChange);
+    find.search('one');
+    root.innerHTML = '<p>nothing here</p>';
+    find.refresh();
+    expect(onChange).toHaveBeenLastCalledWith(-1, 0);
+    root.innerHTML = '<p>one two one</p>';
+    find.refresh();
+    expect(onChange).toHaveBeenLastCalledWith(0, 2);
   });
   it('leaves the reading position alone on refresh', () => {
     const find = new FindController(root, onChange);

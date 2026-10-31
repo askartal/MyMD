@@ -34,3 +34,20 @@ describe('renderMarkdown', () => {
   it('survives an unclosed fence', () => expect(renderMarkdown('```js\nconst a')).toContain('<code'));
   it('returns nothing for an empty file', () => expect(renderMarkdown('')).toBe(''));
 });
+
+describe('front matter that only looks like it', () => {
+  it('keeps a leading rule above prose that starts with a colon line', () => {
+    const text = '---\nWarning: read this first\n\nA whole paragraph.\n\n## A heading\n\nMore.\n\n---\n\nThe rest';
+    expect(stripFrontMatter(text)).toBe(text);
+  });
+  it('removes an empty block', () => expect(stripFrontMatter('---\n---\n# B')).toBe('# B'));
+  it('removes a block that starts with a comment', () => {
+    expect(stripFrontMatter('---\n# about\ntitle: A\n---\n# B')).toBe('# B');
+  });
+  it('removes Unicode and quoted keys', () => {
+    expect(stripFrontMatter('---\nbaşlık: A\n"my key": B\n---\n# C')).toBe('# C');
+  });
+  it('removes lists and nested values', () => {
+    expect(stripFrontMatter('---\ntags:\n  - a\n  - b\n- c\n---\n# D')).toBe('# D');
+  });
+});

@@ -43,3 +43,18 @@ Out of scope for v0.1.0. Each needs a decision before work starts.
 - Automatic updates
 - Code signing
 - Windows 10 support
+
+## Deferred from the v0.1.0 review
+
+Small issues the final review found. None blocks a release.
+
+- Move Markdown rendering to a worker with a timeout, because a pathological document can freeze the window
+- Reset the remembered scroll position when a different document opens
+- Close the sidebar drawer on `Ctrl+O`, drop and second launch
+- Reset the find position on a different document
+- Run `allow_images` and `watch_folder` as async commands
+- Make `<a name="x">` link targets work
+- Keep document ids away from shell styles, for example with DOMPurify's `SANITIZE_NAMED_PROPS`
+- Run tests in `release.yml`, check the tag against the version, and pin actions to commit hashes
+- Add `base-uri`, `form-action` and `object-src` to the content security policy, and a Rust navigation guard
+- Remove `serde_json` from `Cargo.toml` if nothing needs it

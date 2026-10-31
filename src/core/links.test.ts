@@ -48,3 +48,29 @@ describe('localImagePath', () => {
   it('resolves images beside a document on a network share', () =>
     expect(localImagePath('a.png', '\\\\nas\\notes\\guide.md')).toBe('\\\\nas\\notes\\a.png'));
 });
+
+describe('documents on a network share', () => {
+  const shared = '\\\\nas\\notes\\guide.md';
+
+  it.each(['/evil/share/a.png', '\\evil\\share\\a.png'])('keeps the root-relative image %s on the same share', (src) => {
+    expect(localImagePath(src, shared)).toBe('\\\\nas\\notes\\evil\\share\\a.png');
+  });
+  it('keeps a root-relative link on the same share', () => {
+    expect(classifyLink('/evil/share/a.md', shared)).toEqual({
+      kind: 'document', path: '\\\\nas\\notes\\evil\\share\\a.md', fragment: null });
+  });
+  it('still reaches the root of the drive from a local document', () => {
+    expect(localImagePath('/pics/a.png', current)).toBe('C:\\pics\\a.png');
+  });
+});
+
+describe('a literal percent sign in a name', () => {
+  it('survives in a link', () => expect(classifyLink('100%%20done.md', current)).toEqual({
+    kind: 'document', path: 'C:\\Users\\Test User\\notes\\100% done.md', fragment: null }));
+  it('survives in an image', () => {
+    expect(localImagePath('50%%20off.png', current)).toBe('C:\\Users\\Test User\\notes\\50% off.png');
+  });
+  it('leaves a stray percent alone', () => {
+    expect(localImagePath('50%.png', current)).toBe('C:\\Users\\Test User\\notes\\50%.png');
+  });
+});
