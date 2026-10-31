@@ -6,7 +6,8 @@ Rewrite this file at the end of every session so the next one can start cold.
 
 ## Current state
 
-- All 11 plan tasks are built and merged into `main`, which is pushed to GitHub. There's no tag or Release yet.
+- All 11 plan tasks are built and merged into `main`, which is pushed to GitHub, and CI passes.
+- `v0.1.0` is tagged. Its draft Release waits for review.
 - 149 TypeScript tests and 14 Rust tests pass, and `npm run build` and `npm run tauri build` both finish.
 - The whole-branch review is done, and its Critical and Important findings are fixed and tested. Deferred minors are under "Later" in `TODO.md`.
 - The installer is `MyMD_0.1.0_x64-setup.exe`, 2.4 MiB, and it's installed on the development PC.
@@ -19,7 +20,7 @@ The build is finished. What's left waits on the maintainer.
 ## Waiting on the maintainer
 
 - Judge the items in "Checks only a person can make" below
-- Go-ahead for the `v0.1.0` tag, then review and publish the draft Release
+- Review and publish the `v0.1.0` draft Release
 
 ## Checks only a person can make
 

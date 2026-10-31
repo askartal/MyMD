@@ -4,7 +4,7 @@ User-visible changes to MyMD. The format follows [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
-The first release will be `0.1.0`.
+## [0.1.0] - 2026-10-31
 
 ### Added
 
