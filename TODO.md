@@ -15,7 +15,7 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 - [x] Task 3: Paths and links
 - [x] Task 4: Outline
 - [ ] Task 5: Rust backend
-- [ ] Task 6: Bridge, fixtures and async helpers
+- [x] Task 6: Bridge, fixtures and async helpers
 - [ ] Task 7: Shell, styles and opening documents
 - [ ] Task 8: Sidebar
 - [ ] Task 9: Find in page
