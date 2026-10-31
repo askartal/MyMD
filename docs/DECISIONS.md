@@ -52,7 +52,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 013: MIT license
 
-**Proposed, 2026-10-31.** It's simple and widely understood. Waiting for the maintainer's confirmation.
+**Accepted, 2026-10-31.** It's simple and widely understood. Confirmed by the maintainer.
 
 ## 014: Unsigned releases, published from drafts
 

@@ -4,8 +4,9 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 
 ## Now
 
-- [ ] Maintainer: review the plan and choose how it gets built
-- [ ] Maintainer: confirm the MIT license
+- [x] Maintainer: review the plan and choose how it gets built (Native)
+- [x] Maintainer: say when to start building
+- [x] Maintainer: confirm the MIT license
 
 ## Build v0.1.0
 

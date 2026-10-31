@@ -6,22 +6,19 @@ Rewrite this file at the end of every session so the next one can start cold.
 
 ## Current state
 
-- The design, spec and implementation plan are finished. The plan is waiting for the maintainer's review.
-- There's no application code yet.
+- The design, spec and implementation plan are finished.
+- The maintainer chose Native execution: one session builds every task, then one fresh reviewer checks the whole branch.
+- Building has started on branch `build/v0.1.0`. `main` stays as it is until the maintainer approves a merge.
 - Project notes and repository config are in place.
 - Git is initialized on `main`, with `origin` set to https://github.com/askartal/MyMD.
 - The GitHub repository is public and empty. Nothing has been pushed.
 
 ## Next step
 
-Once the maintainer has reviewed the plan and chosen how to build it, start at plan Task 1.
-
-Task 1 needs the maintainer present to approve an admin prompt for the C++ Build Tools.
+Use `superpowers:executing-plans` to continue the plan. The ledger at `.superpowers/sdd/2026-10-31-mymd-markdown-viewer/progress.md` is local and shows which tasks are finished. If it's gone, use `TODO.md` and `git log`.
 
 ## Waiting on the maintainer
 
-- Plan review and choice of execution approach
-- Confirmation of the MIT license
 - Go-ahead for the first push
 
 ## Development environment

@@ -1,0 +1,47 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "MyMD",
+  "version": "0.1.0",
+  "identifier": "io.github.askartal.mymd",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "MyMD",
+        "width": 1100,
+        "height": 760,
+        "minWidth": 480,
+        "minHeight": 400,
+        "visible": false,
+        "transparent": true,
+        "zoomHotkeysEnabled": true,
+        "windowEffects": { "effects": ["acrylic"] }
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' asset: http://asset.localhost https: data:; connect-src ipc: http://ipc.localhost",
+      "devCsp": null,
+      "assetProtocol": { "enable": true, "scope": [] }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": { "nsis": { "installMode": "currentUser" } },
+    "fileAssociations": [
+      { "ext": ["md", "markdown"], "name": "Markdown document", "role": "Viewer" }
+    ]
+  }
+}
