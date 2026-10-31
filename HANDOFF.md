@@ -6,7 +6,7 @@ Rewrite this file at the end of every session so the next one can start cold.
 
 ## Current state
 
-- All 11 plan tasks are built and committed on branch `build/v0.1.0`. `main` hasn't changed, and nothing has been pushed.
+- All 11 plan tasks are built and merged into `main` locally. Nothing has been pushed.
 - 149 TypeScript tests and 14 Rust tests pass, and `npm run build` and `npm run tauri build` both finish.
 - The whole-branch review is done, and its Critical and Important findings are fixed and tested. Deferred minors are under "Later" in `TODO.md`.
 - The installer is `MyMD_0.1.0_x64-setup.exe`, 2.4 MiB, and it's installed on the development PC.
@@ -20,7 +20,6 @@ The build is finished. What's left waits on the maintainer.
 
 - Judge the items in "Checks only a person can make" below
 - Decide whether to rewrite local history before the first push: commit c3751eb has a local path containing the Windows user name, and a later commit removes it. It can't be undone once pushed.
-- Go-ahead to merge `build/v0.1.0` into `main`
 - Go-ahead for the first push, then the `v0.1.0` tag and publishing the draft Release
 
 ## Checks only a person can make
