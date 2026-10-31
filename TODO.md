@@ -12,7 +12,7 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 
 - [ ] Task 1: Toolchain, scaffold and glass check
 - [x] Task 2: Markdown rendering
-- [ ] Task 3: Paths and links
+- [x] Task 3: Paths and links
 - [ ] Task 4: Outline
 - [ ] Task 5: Rust backend
 - [ ] Task 6: Bridge, fixtures and async helpers

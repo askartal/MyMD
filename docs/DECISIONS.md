@@ -65,3 +65,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 ## 016: Project notes are committed
 
 **Accepted, 2026-10-31.** Agents and contributors share the same context. Because the repository is public, these notes must contain nothing private. `.hallmark/` holds local tool records, so it's ignored.
+
+## 017: Documents can't reach network paths
+
+**Accepted, 2026-10-31.** Images load as soon as a document opens, and Windows answers a network path by contacting that host with the user's identity. So a path written in a document, such as `//host/a.png`, is refused for both images and links. Relative paths still work when the document itself is on a network share.
