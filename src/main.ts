@@ -10,6 +10,7 @@ import { buildOutline, currentHeadingId, scrollToHeading, type OutlineItem } fro
 import { renderMarkdown } from './core/render';
 import { wrapTables } from './core/tables';
 import { bridge, type FileEntry } from './platform/bridge';
+import { FindController } from './ui/find';
 import { createSidebar, sidebarVisible } from './ui/sidebar';
 
 const READ_RETRY_MS = 100;
@@ -18,10 +19,10 @@ const SIDEBAR_VIEW_KEY = 'mymd.sidebarView';
 const drawerQuery = window.matchMedia('(width < 768px)');
 
 // Cached at startup, because headings in a document can reuse these ids.
-function shellElement(id: string): HTMLElement {
+function shellElement<T extends HTMLElement = HTMLElement>(id: string): T {
   const element = document.getElementById(id);
   if (!element) throw new Error(`Missing shell element: ${id}`);
-  return element;
+  return element as T;
 }
 
 const app = shellElement('app');
@@ -33,6 +34,9 @@ const scroller = shellElement('scroller');
 const doc = shellElement('doc');
 const notice = shellElement('notice');
 const noticeOpen = shellElement('notice-open');
+const findSlot = shellElement('find-slot');
+const findInput = shellElement<HTMLInputElement>('find-input');
+const findCount = shellElement('find-count');
 
 const latest = createLatest();
 let currentPath: string | null = null;
@@ -72,6 +76,10 @@ const sidebar = createSidebar(sidebarElement, {
   },
 });
 
+const find = new FindController(doc, (index, total) => {
+  findCount.textContent = index >= 0 ? `${index + 1} of ${total}` : findInput.value ? 'No matches' : '';
+});
+
 function focusDocument(): void {
   scroller.focus({ preventScroll: true, focusVisible: false });
 }
@@ -101,6 +109,22 @@ function toggleSidebar(): void {
 function closeDrawer(): void {
   drawerOpen = false;
   applySidebar();
+}
+
+function openFind(): void {
+  if (!currentPath) return;
+  closeDrawer();
+  findSlot.hidden = false;
+  findInput.focus();
+  findInput.select();
+}
+
+function closeFind(): void {
+  findSlot.hidden = true;
+  findInput.value = '';
+  findCount.textContent = '';
+  find.clear();
+  focusDocument();
 }
 
 function showFiles(files: FileEntry[]): void {
@@ -141,6 +165,7 @@ async function openDocument(path: string, options: { keepScroll?: boolean; fragm
   void bridge.setTitle(`${data.name} - MyMD`);
   outline = buildOutline(doc);
   sidebar.setOutline(outline);
+  find.refresh();
   showFiles(files);
   scroller.scrollTop = options.keepScroll ? scrollTop : 0;
   if (options.fragment) scrollToHeading(doc, options.fragment);
@@ -176,7 +201,7 @@ function showMissingImage(image: HTMLImageElement): void {
 
 function isBlockedKey(event: KeyboardEvent): boolean {
   const key = event.key.toLowerCase();
-  return key === 'f5' || (event.ctrlKey && (key === 'p' || key === 'r'));
+  return key === 'f3' || key === 'f5' || (event.ctrlKey && ['g', 'p', 'r'].includes(key));
 }
 
 let scrollFrame = 0;
@@ -202,6 +227,15 @@ doc.addEventListener('error', (event) => {
   if (event.target instanceof HTMLImageElement) showMissingImage(event.target);
 }, true);
 
+findInput.addEventListener('input', () => find.search(findInput.value));
+
+findInput.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter') return;
+  event.preventDefault();
+  if (event.shiftKey) find.previous();
+  else find.next();
+});
+
 noticeOpen.addEventListener('click', () => void pickAndOpen());
 toggleButton.addEventListener('click', toggleSidebar);
 
@@ -215,7 +249,10 @@ drawerQuery.addEventListener('change', closeDrawer);
 window.addEventListener('keydown', (event) => {
   const key = event.key.toLowerCase();
   if (isBlockedKey(event)) event.preventDefault();
-  if (event.key === 'Escape' && drawerOpen) closeDrawer();
+  if (event.key === 'Escape') {
+    if (drawerOpen) closeDrawer();
+    else if (!findSlot.hidden) closeFind();
+  }
   if (!event.ctrlKey) return;
   if (key === 'o') {
     event.preventDefault();
@@ -224,6 +261,10 @@ window.addEventListener('keydown', (event) => {
   if (key === 'b') {
     event.preventDefault();
     toggleSidebar();
+  }
+  if (key === 'f') {
+    event.preventDefault();
+    openFind();
   }
 });
 

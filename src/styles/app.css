@@ -95,8 +95,71 @@ html[data-shell="browser"] #app {
 
 #find-slot {
   display: flex;
-  flex: none;
+  flex: 0 1 var(--find-w);
+  min-width: 0;
   margin-left: auto;
+}
+
+.find {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  height: var(--control);
+  padding-inline: var(--s-3);
+  color: var(--text-2);
+  background: var(--surface-2);
+  border-radius: var(--r-full);
+  transition: background var(--t-fast) var(--ease);
+}
+
+.find:hover {
+  background: var(--surface-3);
+}
+
+.find:focus-within {
+  box-shadow: var(--focus);
+}
+
+.find svg {
+  flex: none;
+  width: var(--s-4);
+  height: var(--s-4);
+}
+
+#find-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  background: transparent;
+  border: 0;
+}
+
+#find-input:focus-visible {
+  box-shadow: none;
+}
+
+#find-input::placeholder {
+  color: var(--text-3);
+}
+
+#find-count {
+  flex: none;
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+::highlight(mymd-find) {
+  color: var(--peri-ink);
+  background-color: var(--peri-soft);
+}
+
+::highlight(mymd-find-current) {
+  color: var(--surface);
+  background-color: var(--peri-ink);
 }
 
 #scroller {

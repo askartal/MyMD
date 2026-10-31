@@ -19,7 +19,16 @@
           </button>
           <span id="doc-name"></span>
           <span id="doc-status" role="status"></span>
-          <div id="find-slot"></div>
+          <div id="find-slot" hidden>
+            <label class="find">
+              <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="7" cy="7" r="4.25" />
+                <path d="m10.5 10.5 3 3" />
+              </svg>
+              <input id="find-input" type="text" placeholder="Find" aria-label="Find in document" autocomplete="off" spellcheck="false" />
+              <output id="find-count"></output>
+            </label>
+          </div>
         </header>
         <div id="scroller" role="region" aria-label="Document" tabindex="0">
           <article id="doc" class="prose" hidden></article>
