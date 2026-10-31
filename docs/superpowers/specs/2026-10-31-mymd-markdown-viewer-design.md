@@ -1,6 +1,6 @@
 # MyMD design
 
-A beautiful, minimal Markdown viewer for Windows 11.
+A beautiful, minimal, open-source Markdown viewer for Windows 11.
 
 - **Date:** 2026-10-31
 - **Status:** design approved in conversation; written spec awaiting review
@@ -9,7 +9,7 @@ A beautiful, minimal Markdown viewer for Windows 11.
 
 **Outcome.** Double-click a `.md` file in Explorer and read it in a calm, polished window.
 
-**Audience.** One person, on their own Windows 11 PC. It works offline, with no accounts.
+**Audience.** Anyone on Windows 11 who wants a calm way to read Markdown. The project is public at https://github.com/askartal/MyMD. The app works offline, with no accounts.
 
 **What it's used for.** All four of these, without the app feeling busy:
 
@@ -24,6 +24,7 @@ A beautiful, minimal Markdown viewer for Windows 11.
 - A saved change appears without any action and without losing the reading position.
 - The app stays easy to maintain: no UI framework, small single-purpose modules, and one small Rust file.
 - The window follows the Soft Order look in light and dark, with frosted glass behind the content.
+- A new visitor can install it from GitHub Releases, or build it from source, by following the README.
 
 ## Scope
 
@@ -38,6 +39,7 @@ A beautiful, minimal Markdown viewer for Windows 11.
 - Opening through Explorer, `Ctrl+O` or drag and drop
 - Light and dark modes that follow the Windows setting
 - A per-user installer with `.md` and `.markdown` file associations
+- A public repository with a license, README, automated checks and tagged releases
 
 **Out of scope**
 
@@ -50,6 +52,7 @@ A beautiful, minimal Markdown viewer for Windows 11.
 - Export and printing
 - An in-app theme switch
 - Automatic updates
+- Code signing
 - Windows 10 and other platforms
 
 ## User experience
@@ -248,11 +251,23 @@ A downloaded document is untrusted input.
 - Per-user NSIS installer, so installing needs no admin prompt
 - File associations for `.md` and `.markdown`
 - Windows 11 x64
-- Not code-signed, because it's built and used locally
+- Not code-signed, so Windows SmartScreen warns on the first run of a downloaded installer. The README explains this.
+
+## Open source
+
+- **Repository:** https://github.com/askartal/MyMD, public, default branch `main`.
+- **Identifier:** `io.github.askartal.mymd`. First version: `0.1.0`.
+- **License:** MIT, copyright 2026 Ali Sinan Kartal.
+- **Third-party notices:** `THIRD_PARTY_NOTICES.md` lists each bundled dependency and its license, including the SIL Open Font License for Inter.
+- **README:** what the app does, a real screenshot, installing from Releases with the SmartScreen note, a privacy note, shortcuts, building and testing from source, and the license. Issues and pull requests are welcome; there's no separate contributing guide.
+- **Privacy note:** the app has no telemetry. Web images in a document load from their own hosts, so opening that document can contact them.
+- **Checks:** `.github/workflows/ci.yml` runs tests and builds on `windows-latest` for pushes and pull requests to `main`.
+- **Releases:** `.github/workflows/release.yml` runs on `v*` tags and creates a draft GitHub Release with the installer. A person reviews the draft and publishes it.
+- **Repository contents:** the specs and plans in `docs/` are committed for contributors. `.hallmark/` holds local tool records and is ignored.
 
 ## Setup
 
-Building needs a one-time install of Rust and the Microsoft C++ Build Tools. Node, npm, Git and WebView2 are already on this PC. The Build Tools install shows an admin prompt, which the user approves.
+Building from source needs Node, Rust and the Microsoft C++ Build Tools. Node, npm, Git and WebView2 are already on the maintainer's PC, so Rust and the Build Tools are a one-time install there. The Build Tools install shows an admin prompt, which the maintainer approves.
 
 ## Testing
 
