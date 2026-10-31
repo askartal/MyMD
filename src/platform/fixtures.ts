@@ -116,7 +116,13 @@ const shortcuts = `# Keyboard shortcuts
 Back to the [guide](guide.md#live-refresh).
 `;
 
+const empty = `---
+title: A file with only front matter
+---
+`;
+
 export const fixtures: DocumentData[] = [
   { name: 'guide.md', path: 'C:\\Fixtures\\guide.md', text: guide },
   { name: 'shortcuts.md', path: 'C:\\Fixtures\\shortcuts.md', text: shortcuts },
+  { name: 'empty.md', path: 'C:\\Fixtures\\empty.md', text: empty },
 ];

@@ -7,13 +7,20 @@ import { createLatest, retryOnce } from './core/async';
 import { applyLocalImages } from './core/images';
 import { classifyLink, folderOf, isMarkdownPath, samePath } from './core/links';
 import { buildOutline, currentHeadingId, scrollToHeading, type OutlineItem } from './core/outline';
-import { renderMarkdown } from './core/render';
+import { noticeFor } from './core/notice';
+import { renderMarkdown, stripFrontMatter } from './core/render';
 import { wrapTables } from './core/tables';
 import { bridge, type FileEntry } from './platform/bridge';
 import { FindController } from './ui/find';
 import { createSidebar, sidebarVisible } from './ui/sidebar';
 
+interface OpenOptions {
+  keepScroll?: boolean;
+  fragment?: string | null;
+}
+
 const READ_RETRY_MS = 100;
+const UPDATED_MS = 4000;
 const SIDEBAR_OPEN_KEY = 'mymd.sidebarOpen';
 const SIDEBAR_VIEW_KEY = 'mymd.sidebarView';
 const drawerQuery = window.matchMedia('(width < 768px)');
@@ -30,21 +37,29 @@ const sidebarElement = shellElement('sidebar');
 const panel = shellElement('panel');
 const toggleButton = shellElement('toggle-sidebar');
 const docName = shellElement('doc-name');
+const docStatus = shellElement('doc-status');
 const scroller = shellElement('scroller');
 const doc = shellElement('doc');
 const notice = shellElement('notice');
+const noticeTitle = shellElement('notice-title');
+const noticeBody = shellElement('notice-body');
 const noticeOpen = shellElement('notice-open');
+const noticeHints = shellElement('notice-hints');
 const findSlot = shellElement('find-slot');
 const findInput = shellElement<HTMLInputElement>('find-input');
 const findCount = shellElement('find-count');
 
 const latest = createLatest();
+const latestFiles = createLatest();
 let currentPath: string | null = null;
+let watchedFolder: string | null = null;
 let outline: OutlineItem[] = [];
 let fileCount = 0;
 let sidebarOpen = recall(SIDEBAR_OPEN_KEY) !== 'false';
 let sidebarOverride: boolean | null = null;
 let drawerOpen = false;
+let readingTop = 0;
+let statusTimer = 0;
 
 function recall(key: string): string | null {
   try {
@@ -127,18 +142,81 @@ function closeFind(): void {
   focusDocument();
 }
 
-function showFiles(files: FileEntry[]): void {
-  fileCount = files.length;
-  sidebar.setFiles(files, currentPath);
-  applySidebar();
-}
-
 function updateCurrentHeading(): void {
   sidebar.setCurrentHeading(currentHeadingId(outline, doc, scroller));
 }
 
 function listFiles(path: string): Promise<FileEntry[]> {
   return bridge.listFolder(folderOf(path)).catch(() => []);
+}
+
+async function refreshFiles(): Promise<void> {
+  const path = currentPath;
+  if (!path) return;
+  const files = await latestFiles(() => listFiles(path));
+  if (files && path === currentPath) sidebar.setFiles(files, path);
+}
+
+function watchFolderOf(path: string): void {
+  const folder = folderOf(path);
+  if (watchedFolder && samePath(watchedFolder, folder)) return;
+  watchedFolder = folder;
+  // A watcher failure is not shown, because the document stays readable.
+  bridge.watchFolder(folder).catch(() => {
+    watchedFolder = null;
+  });
+}
+
+function setStatus(text: string): void {
+  window.clearTimeout(statusTimer);
+  docStatus.textContent = text;
+}
+
+function showUpdated(): void {
+  setStatus('Updated just now');
+  statusTimer = window.setTimeout(() => setStatus(''), UPDATED_MS);
+}
+
+function setCurrentDocument(path: string, name: string): boolean {
+  const isNew = !currentPath || !samePath(currentPath, path);
+  if (isNew) {
+    sidebarOverride = null;
+    setStatus('');
+  }
+  currentPath = path;
+  toggleButton.hidden = false;
+  docName.textContent = name;
+  void bridge.setTitle(`${name} - MyMD`);
+  watchFolderOf(path);
+  return isNew;
+}
+
+function showContent(content: DocumentFragment): void {
+  doc.replaceChildren(content);
+  doc.hidden = false;
+  notice.hidden = true;
+  outline = buildOutline(doc);
+  sidebar.setOutline(outline);
+  find.refresh();
+}
+
+function showNotice({ title, body }: { title: string; body: string }): void {
+  if (!doc.hidden) readingTop = scroller.scrollTop;
+  doc.hidden = true;
+  doc.replaceChildren();
+  outline = [];
+  sidebar.setOutline(outline);
+  find.refresh();
+  noticeTitle.textContent = title;
+  noticeBody.textContent = body;
+  noticeBody.hidden = !body;
+  noticeHints.hidden = true;
+  notice.hidden = false;
+}
+
+// Arrow keys and Page Down need focus inside the scroller.
+function restoreFocus(): void {
+  if (document.activeElement === document.body) focusDocument();
 }
 
 async function loadDocument(path: string) {
@@ -150,28 +228,43 @@ async function loadDocument(path: string) {
   return { data, content: template.content, files: await listFiles(data.path) };
 }
 
-async function openDocument(path: string, options: { keepScroll?: boolean; fragment?: string | null } = {}): Promise<void> {
-  const loaded = await latest(() => loadDocument(path));
-  if (!loaded) return;
-  const { data, content, files } = loaded;
-  const scrollTop = scroller.scrollTop;
-  if (!currentPath || !samePath(currentPath, data.path)) sidebarOverride = null;
-  doc.replaceChildren(content);
-  doc.hidden = false;
-  notice.hidden = true;
-  toggleButton.hidden = false;
-  currentPath = data.path;
-  docName.textContent = data.name;
-  void bridge.setTitle(`${data.name} - MyMD`);
-  outline = buildOutline(doc);
-  sidebar.setOutline(outline);
-  find.refresh();
-  showFiles(files);
+function showDocument({ data, content, files }: Awaited<ReturnType<typeof loadDocument>>, options: OpenOptions): void {
+  const scrollTop = doc.hidden ? readingTop : scroller.scrollTop;
+  // The sidebar's start state is set once per document, so a refresh never moves the page.
+  if (setCurrentDocument(data.path, data.name)) fileCount = files.length;
+  if (stripFrontMatter(data.text).trim() === '') showNotice({ title: 'This file is empty.', body: '' });
+  else showContent(content);
+  sidebar.setFiles(files, data.path);
+  applySidebar();
   scroller.scrollTop = options.keepScroll ? scrollTop : 0;
   if (options.fragment) scrollToHeading(doc, options.fragment);
   updateCurrentHeading();
-  // Arrow keys and Page Down need focus inside the scroller.
-  if (document.activeElement === document.body) focusDocument();
+  restoreFocus();
+}
+
+function showFailure(path: string, error: unknown): void {
+  const name = path.split(/[\\/]/).pop() ?? path;
+  // With nothing to read, the sidebar follows the remembered choice so other files stay in reach.
+  if (setCurrentDocument(path, name)) sidebarOverride = sidebarOpen;
+  setStatus('');
+  showNotice(noticeFor(error, name));
+  applySidebar();
+  restoreFocus();
+  void refreshFiles();
+}
+
+async function openDocument(path: string, options: OpenOptions = {}): Promise<void> {
+  try {
+    const loaded = await latest(() => loadDocument(path));
+    if (loaded) showDocument(loaded, options);
+  } catch (error) {
+    showFailure(path, error);
+  }
+}
+
+async function refreshDocument(path: string): Promise<void> {
+  await openDocument(path, { keepScroll: true });
+  if (!doc.hidden && currentPath && samePath(currentPath, path)) showUpdated();
 }
 
 function openFirstMarkdown(paths: string[]): void {
@@ -274,6 +367,13 @@ window.addEventListener('contextmenu', (event) => {
 
 bridge.onOpenPath((path) => openFirstMarkdown([path]));
 bridge.onFileDrop(openFirstMarkdown);
+
+bridge.onFolderChanged((paths) => {
+  const path = currentPath;
+  if (!path) return;
+  if (paths.some((changed) => samePath(changed, path))) void refreshDocument(path);
+  else void refreshFiles();
+});
 
 async function start(): Promise<void> {
   if (bridge.isBrowser) document.documentElement.dataset.shell = 'browser';
