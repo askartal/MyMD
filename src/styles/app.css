@@ -113,6 +113,150 @@ html[data-shell="browser"] #app {
   box-shadow: var(--focus-inset);
 }
 
+/* Sidebar */
+
+#sidebar {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--s-3);
+  width: var(--sidebar-w);
+  min-height: 0;
+  padding: var(--s-2) 0 var(--s-2) var(--s-2);
+  user-select: none;
+}
+
+.segmented {
+  display: flex;
+  flex: none;
+  padding: var(--s-half);
+  background: var(--track);
+  border-radius: var(--r-full);
+}
+
+.segmented [role="tab"] {
+  flex: 1;
+  height: var(--control-sm);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-full);
+  transition: background var(--t-fast) var(--ease);
+}
+
+.segmented [role="tab"]:hover {
+  background: var(--sel);
+}
+
+.segmented [role="tab"]:active {
+  background: var(--track);
+}
+
+.segmented [role="tab"][aria-selected="true"] {
+  background: var(--seg);
+  box-shadow: var(--e-1);
+}
+
+.segmented [role="tab"]:focus-visible {
+  box-shadow: var(--focus);
+}
+
+.side-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--s-half);
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.side-row {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: var(--control);
+  padding-inline: var(--s-6) var(--s-2);
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-md);
+  transition: background var(--t-fast) var(--ease);
+}
+
+.side-row:hover {
+  background: var(--track);
+}
+
+.side-row:active,
+.side-row[aria-current="true"] {
+  background: var(--sel);
+}
+
+.side-row[aria-current="true"]::before {
+  position: absolute;
+  inset-block-start: calc(50% - var(--dot) / 2);
+  inset-inline-start: var(--s-2);
+  width: var(--dot);
+  height: var(--dot);
+  content: "";
+  background: var(--accent);
+  border-radius: var(--r-full);
+}
+
+.side-row:focus-visible {
+  box-shadow: var(--focus-inset);
+}
+
+.side-row[data-level="2"] {
+  padding-inline-start: var(--s-8);
+}
+
+.side-row[data-level="3"] {
+  padding-inline-start: var(--s-10);
+}
+
+.side-empty {
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--fs-sm);
+}
+
+/* Below 768 px the sidebar is a drawer on solid surface. */
+@media (width < 768px) {
+  #sidebar {
+    --sel: var(--surface-3);
+    --track: var(--surface-2);
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: 2;
+    padding: var(--s-2);
+    background: var(--surface);
+    box-shadow: var(--e-3);
+    transition: opacity var(--t) var(--ease), transform var(--t) var(--ease);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateX(calc(-1 * var(--s-2)));
+    }
+  }
+
+  #app:has(#sidebar:not([hidden]))::after {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    content: "";
+    background: var(--scrim);
+  }
+}
+
 /* Empty state and messages */
 
 #notice {
