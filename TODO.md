@@ -14,7 +14,7 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 - [x] Task 2: Markdown rendering
 - [x] Task 3: Paths and links
 - [x] Task 4: Outline
-- [ ] Task 5: Rust backend
+- [x] Task 5: Rust backend
 - [x] Task 6: Bridge, fixtures and async helpers
 - [ ] Task 7: Shell, styles and opening documents
 - [ ] Task 8: Sidebar
