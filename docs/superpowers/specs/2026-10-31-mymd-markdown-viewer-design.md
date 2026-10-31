@@ -198,16 +198,16 @@ Selected sidebar rows use a soft translucent fill. Find highlights use periwinkl
 
 ### Units
 
-Each unit has one job and can be understood without reading the others.
+Each unit has one job and can be understood without reading the others. `src/core` holds logic with no Tauri and no app state, `src/ui` holds interface components, and `src/platform` is the only layer that touches Tauri. Tests sit beside the code they cover.
 
 | File | Job | Depends on |
 | --- | --- | --- |
-| `src/bridge.ts` | The only module that calls Tauri. It also serves fixtures when running in a plain browser for development | Tauri APIs |
-| `src/render.ts` | Turns Markdown text into sanitized HTML | `marked`, `highlight.js`, `DOMPurify` |
-| `src/outline.ts` | Assigns heading ids, builds the outline and tracks the current heading | DOM |
-| `src/links.ts` | Classifies links and resolves relative paths | Nothing |
-| `src/find.ts` | Finds and highlights matches with the CSS Custom Highlight API | DOM |
-| `src/sidebar.ts` | Renders the Files and Outline views and handles their keyboard use | DOM |
+| `src/platform/bridge.ts` | The only module that calls Tauri. It also serves fixtures when running in a plain browser for development | Tauri APIs |
+| `src/core/render.ts` | Turns Markdown text into sanitized HTML | `marked`, `highlight.js`, `DOMPurify` |
+| `src/core/outline.ts` | Assigns heading ids, builds the outline and tracks the current heading | DOM |
+| `src/core/links.ts` | Classifies links and resolves relative paths | Nothing |
+| `src/ui/find.ts` | Finds and highlights matches with the CSS Custom Highlight API | DOM |
+| `src/ui/sidebar.ts` | Renders the Files and Outline views and handles their keyboard use | DOM |
 | `src/main.ts` | Holds app state and wires the units together | All of the above |
 | `src/styles/` | `tokens.css`, `app.css`, `prose.css` and `code.css` | Nothing |
 | `src-tauri/src/lib.rs` | Commands, the watcher and plugin setup | Tauri, `notify` |
@@ -263,7 +263,7 @@ A downloaded document is untrusted input.
 - **Privacy note:** the app has no telemetry. Web images in a document load from their own hosts, so opening that document can contact them.
 - **Checks:** `.github/workflows/ci.yml` runs tests and builds on `windows-latest` for pushes and pull requests to `main`.
 - **Releases:** `.github/workflows/release.yml` runs on `v*` tags and creates a draft GitHub Release with the installer. A person reviews the draft and publishes it.
-- **Repository contents:** the specs and plans in `docs/` are committed for contributors. `.hallmark/` holds local tool records and is ignored.
+- **Repository contents:** the specs, plans and project notes (`CLAUDE.md`, `TODO.md`, `HANDOFF.md`, `CHANGELOG.md` and `docs/`) are committed for contributors, so they must contain nothing private. `.hallmark/` holds local tool records and is ignored.
 
 ## Setup
 
@@ -273,9 +273,9 @@ Building from source needs Node, Rust and the Microsoft C++ Build Tools. Node, n
 
 **Automated**
 
-- `render.ts`: tables, task lists, code highlighting, hidden front matter, and removal of scripts and event handlers
-- `outline.ts`: heading levels, unique ids and duplicate headings
-- `links.ts`: every row of the link table, including Windows paths and fragments
+- `src/core/render.ts`: tables, task lists, code highlighting, hidden front matter, and removal of scripts and event handlers
+- `src/core/outline.ts`: heading levels, unique ids and duplicate headings
+- `src/core/links.ts`: every row of the link table, including Windows paths and fragments
 - Rust: `list_folder` filtering and order, and `read_document` handling of BOMs and invalid UTF-8
 
 **In a browser, using the fixtures in `bridge.ts`**

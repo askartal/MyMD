@@ -4,7 +4,7 @@
 
 **Goal:** Build MyMD, an open-source, read-only Windows 11 Markdown viewer in the Soft Order look with a frosted glass window, ready to publish on GitHub.
 
-**Architecture:** A Tauri 2 shell with one small Rust file for file access and watching, and a plain TypeScript interface split into single-purpose modules. Only `src/bridge.ts` touches Tauri, so the interface also runs in a normal browser against fixtures for layout checks.
+**Architecture:** A Tauri 2 shell with one small Rust file for file access and watching, and a plain TypeScript interface split into single-purpose modules. Only `src/platform/bridge.ts` touches Tauri, so the interface also runs in a normal browser against fixtures for layout checks.
 
 **Tech Stack:** Tauri 2, TypeScript, Vite, Vitest, jsdom, `marked`, `highlight.js`, `DOMPurify`, `notify-debouncer-mini`, Inter Variable.
 
@@ -14,8 +14,10 @@
 
 - Windows 11 x64 only. Default window 1100 × 760, minimum 480 × 400.
 - No UI framework.
-- Only `src/bridge.ts` imports from `@tauri-apps/*`.
+- Only `src/platform/bridge.ts` imports from `@tauri-apps/*`.
+- `src/core` imports nothing from `src/ui` or `src/platform`.
 - All Rust commands are read-only.
+- After each task, tick it in `TODO.md` and update `HANDOFF.md`. Record new decisions in `docs/DECISIONS.md`.
 - Every color, font, size and spacing value in CSS comes from a token in `src/styles/tokens.css`.
 - Red appears at most once in a view: one 8 px `--accent` dot. Syntax highlighting never uses red.
 - Interface copy is sentence case. Errors say what happened and what to do, with no raw exception text.
@@ -35,19 +37,19 @@
 
 ## Files beyond the spec's unit list
 
-- `src/async.ts`: `createLatest` and `retryOnce`
-- `src/images.ts`: rewrites local image sources
-- `src/fixtures.ts`: browser-only sample documents, loaded in dev builds only
+- `src/core/async.ts`: `createLatest` and `retryOnce`
+- `src/core/images.ts`: rewrites local image sources
+- `src/platform/fixtures.ts`: browser-only sample documents, loaded in dev builds only
 
 ---
 
 ### Task 1: Toolchain, scaffold and glass check
 
 **Files:**
-- Create: `LICENSE`, `package.json`, `tsconfig.json`, `vite.config.ts`, `index.html`, `.gitignore`, `src/main.ts`, `src/bridge.ts`, `src-tauri/**`
+- Create: `LICENSE`, `package.json`, `tsconfig.json`, `vite.config.ts`, `index.html`, `src/main.ts`, `src/platform/bridge.ts`, `src-tauri/**`
 
 **Interfaces:**
-- Produces: `bridge.showWindow(): Promise<void>` in `src/bridge.ts`; npm scripts `dev`, `build`, `test`, `tauri`.
+- Produces: `bridge.showWindow(): Promise<void>` in `src/platform/bridge.ts`; npm scripts `dev`, `build`, `test`, `tauri`.
 
 - [ ] **Step 1: Install Rust and the C++ Build Tools (the user approves an admin prompt)**
 
@@ -76,8 +78,8 @@ Do not use `create-tauri-app` here, because it can clear a non-empty folder and 
 - Dev dependencies: `typescript`, `vite`, `vitest`, `jsdom`, `@tauri-apps/cli`.
 - `vite.config.ts`: server port `1420`, `strictPort: true`, `clearScreen: false`, Vitest `environment: 'jsdom'`.
 - `tsconfig.json`: strict, `target: ES2022`, `module: ESNext`, `moduleResolution: bundler`, `types: ["vite/client"]`, `include: ["src"]`.
-- `.gitignore`: `node_modules/`, `dist/`, `src-tauri/target/`, `src-tauri/gen/`, `.hallmark/`. Keep `package-lock.json` and `src-tauri/Cargo.lock` committed.
-- `src/bridge.ts`: export `bridge` with `showWindow()`, calling `getCurrentWindow().show()` when `'__TAURI_INTERNALS__' in window`.
+- `.gitignore` already exists. Keep `package-lock.json` and `src-tauri/Cargo.lock` committed.
+- `src/platform/bridge.ts`: export `bridge` with `showWindow()`, calling `getCurrentWindow().show()` when `'__TAURI_INTERNALS__' in window`.
 - `src/main.ts`: calls `bridge.showWindow()`. `index.html` loads it and has a transparent `body`.
 
 - [ ] **Step 4: Add Tauri and its plugins**
@@ -139,7 +141,7 @@ In `src-tauri/Cargo.toml`, add the `protocol-asset` feature to `tauri`, and set 
 Run: `npm run tauri dev`
 Expected: a window opens with the desktop blurred behind it.
 
-Drag and resize it for a few seconds. If it visibly lags, change `acrylic` to `mica` in `tauri.conf.json` and repeat. Check whether the title bar shows the same glass, and note the result for Task 11.
+Drag and resize it for a few seconds. If it visibly lags, change `acrylic` to `mica` in `tauri.conf.json` and repeat. Check whether the title bar shows the same glass. Record both results under "Task results" in `HANDOFF.md`, and update decision 007 in `docs/DECISIONS.md`.
 
 - [ ] **Step 7: Commit**
 
@@ -151,8 +153,8 @@ git commit -m "feat: scaffold Tauri app with glass window"
 ### Task 2: Markdown rendering
 
 **Files:**
-- Create: `src/render.ts`
-- Test: `src/render.test.ts`
+- Create: `src/core/render.ts`
+- Test: `src/core/render.test.ts`
 
 **Interfaces:**
 - Produces: `stripFrontMatter(text: string): string`; `renderMarkdown(text: string): string` (sanitized HTML).
@@ -200,10 +202,10 @@ describe('renderMarkdown', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `npm test -- src/render.test.ts`
+Run: `npm test -- src/core/render.test.ts`
 Expected: FAIL, module not found.
 
-- [ ] **Step 3: Implement `src/render.ts`**
+- [ ] **Step 3: Implement `src/core/render.ts`**
 
 - Front matter is stripped only when it starts at the first byte, has a closing `---` line, and its first non-empty line matches `^[\w-]+:`.
 - Use `marked` with `gfm: true` and `async: false`, and a `code` renderer using `highlight.js/lib/common`. Highlight only when `hljs.getLanguage(lang)` is true; otherwise output escaped text.
@@ -211,21 +213,21 @@ Expected: FAIL, module not found.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npm test -- src/render.test.ts`
+Run: `npm test -- src/core/render.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/render.ts src/render.test.ts
+git add src/core/render.ts src/core/render.test.ts
 git commit -m "feat: render and sanitize Markdown"
 ```
 
 ### Task 3: Paths and links
 
 **Files:**
-- Create: `src/links.ts`
-- Test: `src/links.test.ts`
+- Create: `src/core/links.ts`
+- Test: `src/core/links.test.ts`
 
 **Interfaces:**
 - Produces:
@@ -290,10 +292,10 @@ describe('localImagePath', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `npm test -- src/links.test.ts`
+Run: `npm test -- src/core/links.test.ts`
 Expected: FAIL, module not found.
 
-- [ ] **Step 3: Implement `src/links.ts`**
+- [ ] **Step 3: Implement `src/core/links.ts`**
 
 - A one-letter scheme is a drive letter, not a URL scheme.
 - `file:///` URLs convert to Windows paths and then follow the document rules.
@@ -303,21 +305,21 @@ Expected: FAIL, module not found.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npm test -- src/links.test.ts`
+Run: `npm test -- src/core/links.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/links.ts src/links.test.ts
+git add src/core/links.ts src/core/links.test.ts
 git commit -m "feat: classify links and resolve Windows paths"
 ```
 
 ### Task 4: Outline
 
 **Files:**
-- Create: `src/outline.ts`
-- Test: `src/outline.test.ts`
+- Create: `src/core/outline.ts`
+- Test: `src/core/outline.test.ts`
 
 **Interfaces:**
 - Produces:
@@ -378,22 +380,22 @@ describe('currentHeadingId', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `npm test -- src/outline.test.ts`
+Run: `npm test -- src/core/outline.test.ts`
 Expected: FAIL, module not found.
 
-- [ ] **Step 3: Implement `src/outline.ts`**
+- [ ] **Step 3: Implement `src/core/outline.ts`**
 
 Ids apply to H1 to H6: lowercase with `toLowerCase`, keep `\p{L}\p{N}\p{M}` and hyphens, turn whitespace into hyphens. The reading line is 24 px below the scroller's top. If no heading has reached it, return the first item. Find elements with `CSS.escape`. `scrollToHeading` uses `scrollIntoView`.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npm test -- src/outline.test.ts`
+Run: `npm test -- src/core/outline.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/outline.ts src/outline.test.ts
+git add src/core/outline.ts src/core/outline.test.ts
 git commit -m "feat: build the document outline"
 ```
 
@@ -495,20 +497,20 @@ git commit -m "feat: add file access and folder watching"
 ### Task 6: Bridge, fixtures and async helpers
 
 **Files:**
-- Create: `src/async.ts`, `src/fixtures.ts`
-- Modify: `src/bridge.ts`
-- Test: `src/async.test.ts`
+- Create: `src/core/async.ts`, `src/platform/fixtures.ts`
+- Modify: `src/platform/bridge.ts`
+- Test: `src/core/async.test.ts`
 
 **Interfaces:**
 - Consumes: the Task 5 commands and events.
 - Produces:
 
 ```ts
-// async.ts
+// src/core/async.ts
 export function createLatest(): <T>(task: () => Promise<T>) => Promise<T | null>;
 export function retryOnce<T>(task: () => Promise<T>, delayMs: number): Promise<T>;
 
-// bridge.ts
+// src/platform/bridge.ts
 export interface DocumentData { name: string; path: string; text: string }
 export interface FileEntry { name: string; path: string }
 export const bridge: {
@@ -575,17 +577,17 @@ describe('retryOnce', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `npm test -- src/async.test.ts`
+Run: `npm test -- src/core/async.test.ts`
 Expected: FAIL, module not found.
 
-- [ ] **Step 3: Implement `src/async.ts`**
+- [ ] **Step 3: Implement `src/core/async.ts`**
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npm test -- src/async.test.ts`
+Run: `npm test -- src/core/async.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Complete `src/bridge.ts` and add `src/fixtures.ts`**
+- [ ] **Step 5: Complete `src/platform/bridge.ts` and add `src/platform/fixtures.ts`**
 
 - Set `isBrowser` to `!('__TAURI_INTERNALS__' in window)`.
 - In a Tauri window, each method maps to its command, event or plugin: `open` from the dialog plugin with a Markdown filter, `openUrl` from the opener plugin, `convertFileSrc`, and `getCurrentWebview().onDragDropEvent` for `drop` events.
@@ -609,9 +611,9 @@ git commit -m "feat: add Tauri bridge, fixtures and async helpers"
 Before writing CSS, load `anthropic-skills:soft-order-ui` and `modern-web-guidance:modern-web-guidance`.
 
 **Files:**
-- Create: `src/images.ts`, `src/styles/tokens.css`, `src/styles/app.css`, `src/styles/prose.css`, `src/styles/code.css`
+- Create: `src/core/images.ts`, `src/styles/tokens.css`, `src/styles/app.css`, `src/styles/prose.css`, `src/styles/code.css`
 - Modify: `index.html`, `src/main.ts`
-- Test: `src/images.test.ts`
+- Test: `src/core/images.test.ts`
 
 **Interfaces:**
 - Consumes: `renderMarkdown`, `classifyLink`, `localImagePath`, `folderOf`, `isMarkdownPath`, `buildOutline`, `scrollToHeading`, `bridge`, `createLatest`, `retryOnce`.
@@ -639,14 +641,14 @@ it('rewrites local images and returns their paths', () => {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `npm test -- src/images.test.ts`
+Run: `npm test -- src/core/images.test.ts`
 Expected: FAIL, module not found.
 
-- [ ] **Step 3: Implement `src/images.ts`**
+- [ ] **Step 3: Implement `src/core/images.ts`**
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `npm test -- src/images.test.ts`
+Run: `npm test -- src/core/images.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Create `src/styles/tokens.css`**
@@ -708,9 +710,9 @@ git commit -m "feat: add Soft Order shell and open documents"
 ### Task 8: Sidebar
 
 **Files:**
-- Create: `src/sidebar.ts`
+- Create: `src/ui/sidebar.ts`
 - Modify: `index.html`, `src/main.ts`, `src/styles/app.css`
-- Test: `src/sidebar.test.ts`
+- Test: `src/ui/sidebar.test.ts`
 
 **Interfaces:**
 - Consumes: `FileEntry`, `OutlineItem`, `currentHeadingId`.
@@ -800,16 +802,16 @@ describe('sidebarVisible', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `npm test -- src/sidebar.test.ts`
+Run: `npm test -- src/ui/sidebar.test.ts`
 Expected: FAIL, module not found.
 
-- [ ] **Step 3: Implement `src/sidebar.ts`**
+- [ ] **Step 3: Implement `src/ui/sidebar.ts`**
 
 `createSidebar` builds the segmented control (`role="tablist"`, two `role="tab"` buttons) and two lists. Rows are `<button>` elements carrying `data-path` or `data-heading`. Set `aria-current="true"` only on the current row, and on the current heading's row in Outline. Use `textContent` for names, never `innerHTML`.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npm test -- src/sidebar.test.ts`
+Run: `npm test -- src/ui/sidebar.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Style and wire the sidebar**
@@ -835,9 +837,9 @@ git commit -m "feat: add Files and Outline sidebar"
 ### Task 9: Find in page
 
 **Files:**
-- Create: `src/find.ts`
+- Create: `src/ui/find.ts`
 - Modify: `index.html`, `src/main.ts`, `src/styles/app.css`
-- Test: `src/find.test.ts`
+- Test: `src/ui/find.test.ts`
 
 **Interfaces:**
 - Produces:
@@ -883,7 +885,7 @@ describe('findRanges', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `npm test -- src/find.test.ts`
+Run: `npm test -- src/ui/find.test.ts`
 Expected: FAIL, module not found.
 
 - [ ] **Step 3: Implement `findRanges`**
@@ -892,7 +894,7 @@ Walk text nodes with a `TreeWalker`, join them, and match with an escaped `RegEx
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npm test -- src/find.test.ts`
+Run: `npm test -- src/ui/find.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Implement `FindController` and the control**
@@ -917,8 +919,8 @@ git commit -m "feat: add find in page"
 
 **Files:**
 - Modify: `src/main.ts`, `src/styles/app.css`
-- Test: `src/notice.test.ts`
-- Create: `src/notice.ts`
+- Test: `src/core/notice.test.ts`
+- Create: `src/core/notice.ts`
 
 **Interfaces:**
 - Consumes: `bridge.onFolderChanged`, `samePath`, `folderOf`, `FindController.refresh`.
@@ -947,14 +949,14 @@ it('explains an unreadable file without raw error text', () => {
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `npm test -- src/notice.test.ts`
+Run: `npm test -- src/core/notice.test.ts`
 Expected: FAIL, module not found.
 
 - [ ] **Step 3: Implement `noticeFor`**
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `npm test -- src/notice.test.ts`
+Run: `npm test -- src/core/notice.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Wire refresh and errors in `main.ts`**
@@ -987,7 +989,7 @@ git commit -m "feat: add live refresh and error states"
 
 **Files:**
 - Create: `src-tauri/app-icon.svg`, `.hallmark/log.json` (ignored), `README.md`, `THIRD_PARTY_NOTICES.md`, `docs/screenshot.png`, `.github/workflows/ci.yml`, `.github/workflows/release.yml`
-- Modify: `src/styles/tokens.css`, `src-tauri/icons/**`, possibly `src-tauri/src/lib.rs`
+- Modify: `CHANGELOG.md`, `TODO.md`, `HANDOFF.md`, `src/styles/tokens.css`, `src-tauri/icons/**`, possibly `src-tauri/src/lib.rs`
 
 - [ ] **Step 1: Finish the title bar**
 
@@ -1013,6 +1015,7 @@ Use the current major version of each action.
 - `README.md`: cover every item the spec's Open source section lists for the README. Use only true statements, with no invented numbers. Include how to run (`npm run tauri dev`), test (`npm test` and `cargo test --manifest-path src-tauri/Cargo.toml`) and build (`npm run tauri build`), and the one-time **Open with → Always** step.
 - `docs/screenshot.png`: a real capture of the installed app showing a non-private sample document. Add it after Step 9.
 - `THIRD_PARTY_NOTICES.md`: list each bundled runtime dependency with its license, taken from the installed package metadata, not from memory. Include the full SIL Open Font License text for Inter.
+- `CHANGELOG.md`: list what `0.1.0` includes under `## [Unreleased]`. Move it under a dated `## [0.1.0]` heading when the release is tagged.
 
 - [ ] **Step 5: Add the Hallmark records**
 
