@@ -9,14 +9,14 @@ Rewrite this file at the end of every session so the next one can start cold.
 - All 11 plan tasks are built and merged into `main`, which is pushed to GitHub, and CI passes.
 - `v0.1.0` is published: https://github.com/askartal/MyMD/releases/tag/v0.1.0
 - 149 TypeScript tests and 14 Rust tests pass, and `npm run build` and `npm run tauri build` both finish.
-- The whole-branch review is done, and its Critical and Important findings are fixed and tested. Deferred minors are under "Later" in `TODO.md`.
+- The whole-branch review is done, and its Critical and Important findings are fixed and tested. The four reading-session items have a plan. The other deferred items stay under "Deferred" in `TODO.md`.
 - The installer is `MyMD_0.1.0_x64-setup.exe`, 2.4 MiB, and it's installed on the development PC.
 - `origin` is https://github.com/askartal/MyMD, and the repository is public.
 - Cloud agents start from `AGENTS.md`. On Linux, `npm test` (149) and `npm run build` pass. `cargo test` compiles with rustc ≥ 1.90 and the WebKitGTK packages, and 13 of 14 tests pass. `args_give_first_markdown_as_absolute_path` needs Windows path joins, which `.github/workflows/ci.yml` covers on `windows-latest`. Acrylic, WebView2 and the NSIS installer stay Windows-only.
 
 ## Next step
 
-The build is finished. What's left waits on the maintainer.
+Implement [docs/superpowers/plans/2026-11-01-reading-session-fixes.md](docs/superpowers/plans/2026-11-01-reading-session-fixes.md) task by task. Scroll, the narrow drawer, find and named anchors are the whole of that plan. The trust-boundary work, the release workflow and the feature list are written at the end of the plan and stay unscheduled.
 
 ## Waiting on the maintainer
 

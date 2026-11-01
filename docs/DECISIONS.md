@@ -85,3 +85,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 ## 021: Drive paths and file URLs pass the sanitizer
 
 **Accepted, 2026-10-31.** The spec's link table includes absolute paths, and DOMPurify's default list strips them. The sanitizer now keeps drive paths and `file:///` URLs, and `classifyLink` and `localImagePath` decide what each one does. `file://host` is still removed.
+
+## 022: The next code change is the reading session
+
+**Accepted, 2026-11-01.** v0.1.0 is published. The next change is the four fixes in `docs/superpowers/plans/2026-11-01-reading-session-fixes.md`: remembered scroll, the narrow drawer, find's match index, and named anchors. A worker for rendering, the content security policy, the release workflow, and the out-of-scope feature list stay at the end of that plan until a later decision.

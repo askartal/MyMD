@@ -35,6 +35,16 @@ Each of these waits for the maintainer's go-ahead.
 
 - [x] Document Linux commands, the one Windows-only Rust test, and `windows-latest` CI in `AGENTS.md`
 
+## Next
+
+The reading-session plan is written and not started: [Reading session fixes](docs/superpowers/plans/2026-11-01-reading-session-fixes.md).
+
+- [ ] Task 1: Reset the remembered scroll position
+- [ ] Task 2: Close the drawer on outside opens
+- [ ] Task 3: Restart find on a different document
+- [ ] Task 4: Scroll to named anchors
+- [ ] Task 5: Record the fixes
+
 ## Later
 
 Out of scope for v0.1.0. Each needs a decision before work starts.
@@ -53,11 +63,7 @@ Out of scope for v0.1.0. Each needs a decision before work starts.
 Small issues the final review found. None blocks a release.
 
 - Move Markdown rendering to a worker with a timeout, because a pathological document can freeze the window
-- Reset the remembered scroll position when a different document opens
-- Close the sidebar drawer on `Ctrl+O`, drop and second launch
-- Reset the find position on a different document
 - Run `allow_images` and `watch_folder` as async commands
-- Make `<a name="x">` link targets work
 - Keep document ids away from shell styles, for example with DOMPurify's `SANITIZE_NAMED_PROPS`
 - Run tests in `release.yml`, check the tag against the version, and pin actions to commit hashes
 - Add `base-uri`, `form-action` and `object-src` to the content security policy, and a Rust navigation guard
