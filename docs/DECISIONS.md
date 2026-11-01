@@ -36,7 +36,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 009: Native title bar
 
-**Accepted, 2026-10-31.** It keeps Snap Layouts and normal window behavior, which a custom title bar would have to rebuild.
+**Accepted, 2026-10-31. Replaced by 022.** The native caption kept Snap Layouts. On Windows, Tauri cannot draw the page under that caption, so the separate strip is what 022 removes.
 
 ## 010: Theme follows Windows, with no in-app switch
 
@@ -76,7 +76,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 019: Find has an input and a count, with no buttons
 
-**Accepted, 2026-10-31.** Find opens from the keyboard, so `Enter`, `Shift+Enter` and `Esc` cover it, and fewer controls keep the top bar quiet.
+**Accepted, 2026-10-31. Refined by 022.** Find has no next or previous buttons. `Enter`, `Shift+Enter` and `Esc` cover moving through matches and clearing the query.
 
 ## 020: A dead link keeps the page
 
@@ -86,6 +86,10 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 **Accepted, 2026-10-31.** The spec's link table includes absolute paths, and DOMPurify's default list strips them. The sanitizer now keeps drive paths and `file:///` URLs, and `classifyLink` and `localImagePath` decide what each one does. `file://host` is still removed.
 
-## 022: The next code change is the reading session
+## 022: The toolbar is the top of the window
 
-**Accepted, 2026-11-01.** v0.1.0 is published. The next change is the four fixes in `docs/superpowers/plans/2026-11-01-reading-session-fixes.md`: remembered scroll, the narrow drawer, find's match index, and named anchors. A worker for rendering, the content security policy, the release workflow, and the out-of-scope feature list stay at the end of that plan until a later decision.
+**Accepted, 2026-11-01.** This replaces 009 and refines 019. Tauri's overlaid caption is macOS-only, so on Windows the window is undecorated and the toolbar is the top edge. It holds the sidebar toggle, the file name, find, and minimize, maximize and close. Find stays visible, still an input and a count, with no next or previous buttons. `Ctrl+F` focuses it and `Esc` clears it. The cost is the Snap Layouts flyout on the maximize button. Dragging an empty part of the bar still moves the window, and a double-click there still maximizes.
+
+## 023: Reading session fixes
+
+**Accepted, 2026-11-01.** v0.1.0 is published. The fixes from `docs/superpowers/plans/2026-11-01-reading-session-fixes.md` are accepted: remembered scroll, the narrow drawer, find's match index, and named anchors. A worker for rendering, the content security policy, the release workflow, and the out-of-scope feature list stay at the end of that plan until a later decision.

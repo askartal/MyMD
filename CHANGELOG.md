@@ -6,6 +6,7 @@ User-visible changes to MyMD. The format follows [Keep a Changelog](https://keep
 
 ### Changed
 
+- The top of the window is the toolbar: the file name, find, and the window buttons sit there, and the page starts below them
 - Refined the reading panel elevation, glass tint contrast, sidebar/topbar alignment, outline heading hierarchy, prose/code block borders, empty state card and app icon
 
 ### Fixed

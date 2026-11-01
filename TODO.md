@@ -36,6 +36,10 @@ Each of these waits for the maintainer's go-ahead.
 
 - [x] Document Linux commands, the one Windows-only Rust test, and `windows-latest` CI in `AGENTS.md`
 
+## Caption bar
+
+- [x] Make the toolbar the top of the window, with the file name, find, and the window buttons
+
 ## Next
 
 The reading-session plan is finished: [Reading session fixes](docs/superpowers/plans/2026-11-01-reading-session-fixes.md).

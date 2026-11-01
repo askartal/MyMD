@@ -89,7 +89,7 @@ Web images load from their own hosts, which means opening a document can contact
 
 ## Long documents
 
-The Outline view follows along as you scroll, and the current heading gets the one red dot in the window. Press \`Ctrl+F\` to find text on the page, \`Enter\` to move to the next match, and \`Esc\` to close the control.
+The Outline view follows along as you scroll, and the current heading gets the one red dot in the window. Press \`Ctrl+F\` to find text on the page, \`Enter\` to move to the next match, and \`Esc\` to clear the search.
 
 Reading comfortably depends on line length as much as on type size, so the text column stays narrow even when the window is wide. Make the window narrower and the column follows it, and the sidebar turns into a drawer that slides over the page.
 
@@ -109,7 +109,7 @@ const shortcuts = `# Keyboard shortcuts
 | \`Ctrl+O\` | Open a file |
 | \`Ctrl+B\` | Toggle the sidebar |
 | \`Ctrl+F\` | Find |
-| \`Esc\` | Close find or the sidebar drawer |
+| \`Esc\` | Clear the search, or close the sidebar drawer |
 | \`Up\`, \`Down\`, \`J\`, \`K\`, \`Enter\` | Move through and open sidebar items |
 | \`Ctrl+Plus\`, \`Ctrl+Minus\`, \`Ctrl+0\` | Zoom in, zoom out and reset |
 
