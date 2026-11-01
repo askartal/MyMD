@@ -31,6 +31,10 @@ Each of these waits for the maintainer's go-ahead.
 - [x] Tag `v0.1.0`
 - [x] Review the draft Release and publish it
 
+## Cloud agents
+
+- [x] Document Linux commands, the one Windows-only Rust test, and `windows-latest` CI in `AGENTS.md`
+
 ## Later
 
 Out of scope for v0.1.0. Each needs a decision before work starts.
