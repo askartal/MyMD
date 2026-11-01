@@ -219,7 +219,7 @@ pub fn run() {
         }))
         .plugin(
             tauri_plugin_window_state::Builder::new()
-                .with_state_flags(StateFlags::all() & !StateFlags::VISIBLE)
+                .with_state_flags(StateFlags::all() & !StateFlags::VISIBLE & !StateFlags::DECORATIONS)
                 .build(),
         )
         .plugin(tauri_plugin_dialog::init())
