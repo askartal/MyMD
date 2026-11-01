@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { buildOutline, currentHeadingId } from './outline';
+import { buildOutline, currentHeadingId, scrollToHeading } from './outline';
 
 function doc(html: string) {
   const root = document.createElement('article');
@@ -38,5 +38,51 @@ describe('currentHeadingId', () => {
   });
   it('returns null with no headings', () => {
     expect(currentHeadingId([], doc(''), document.createElement('div'))).toBeNull();
+  });
+});
+
+describe('scrollToHeading', () => {
+  Element.prototype.scrollIntoView = () => {};
+
+  it('scrolls to a heading id', () => {
+    const root = doc('<h2>Setup</h2>');
+    buildOutline(root);
+    const heading = root.querySelector('h2') as HTMLElement;
+    const scroll = vi.spyOn(heading, 'scrollIntoView');
+    scrollToHeading(root, 'setup');
+    expect(scroll).toHaveBeenCalledOnce();
+  });
+
+  it('scrolls to an element id', () => {
+    const root = doc('<p id="note">Here</p>');
+    const paragraph = root.querySelector('p') as HTMLElement;
+    const scroll = vi.spyOn(paragraph, 'scrollIntoView');
+    scrollToHeading(root, 'note');
+    expect(scroll).toHaveBeenCalledOnce();
+  });
+
+  it('scrolls to a named anchor', () => {
+    const root = doc('<a name="note">Here</a>');
+    const anchor = root.querySelector('a') as HTMLElement;
+    const scroll = vi.spyOn(anchor, 'scrollIntoView');
+    scrollToHeading(root, 'note');
+    expect(scroll).toHaveBeenCalledOnce();
+  });
+
+  it('prefers the heading when another element reuses the id', () => {
+    const root = doc('<h2>Setup</h2><p id="setup">x</p>');
+    buildOutline(root);
+    const heading = root.querySelector('h2') as HTMLElement;
+    const paragraph = root.querySelector('p') as HTMLElement;
+    const headingScroll = vi.spyOn(heading, 'scrollIntoView');
+    const paragraphScroll = vi.spyOn(paragraph, 'scrollIntoView');
+    scrollToHeading(root, 'setup');
+    expect(headingScroll).toHaveBeenCalledOnce();
+    expect(paragraphScroll).not.toHaveBeenCalled();
+  });
+
+  it('does nothing when nothing matches', () => {
+    const root = doc('<p>Hi</p>');
+    expect(() => scrollToHeading(root, 'missing')).not.toThrow();
   });
 });

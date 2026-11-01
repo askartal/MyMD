@@ -4,6 +4,17 @@ User-visible changes to MyMD. The format follows [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+### Changed
+
+- Refined the reading panel elevation, glass tint contrast, sidebar/topbar alignment, outline heading hierarchy, prose/code block borders, empty state card and app icon
+
+### Fixed
+
+- A different file opens at the top, including after the previous file was missing or empty
+- The sidebar drawer closes for Ctrl+O, a dropped file and a second launch
+- Find starts at the first match when a different file opens, and keeps its place across a save
+- A link to a named anchor or any element id scrolls to it
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

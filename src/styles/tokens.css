@@ -10,10 +10,10 @@
   --surface: #FCFBFA;
   --surface-2: #F4F2EF;
   --surface-3: #ECEAE6;
-  --glass: rgb(255 255 255 / .55);
-  --sel: rgb(255 255 255 / .62);
+  --glass: rgb(250 248 245 / .68);
+  --sel: rgb(255 255 255 / .78);
   --seg: var(--surface);
-  --track: rgb(22 23 28 / .07);
+  --track: rgb(22 23 28 / .08);
   --border: rgb(22 23 28 / .08);
   --border-strong: rgb(22 23 28 / .14);
   --scrim: rgb(22 23 28 / .24);
@@ -59,6 +59,7 @@
   --s-6: 24px;
   --s-8: 32px;
   --s-10: 40px;
+  --s-12: 48px;
   --s-16: 64px;
 
   /* sizes */
@@ -71,10 +72,12 @@
   --control-lg: 40px;
   --icon: 20px;
   --icon-xl: 48px;
+  --icon-box: 64px;
   --dot: 8px;
   --check: 16px;
   --check-top: 5px;
   --check-line: 1.5px;
+  --quote-line: 3px;
 
   /* elevation: faint and diffuse */
   --e-1: 0 1px 2px rgb(22 23 28 / .04);
@@ -123,12 +126,12 @@
     --surface: #17181C;
     --surface-2: #202127;
     --surface-3: #2A2B32;
-    --glass: rgb(30 31 36 / .6);
-    --sel: rgb(255 255 255 / .1);
-    --seg: rgb(255 255 255 / .14);
+    --glass: rgb(20 21 26 / .68);
+    --sel: rgb(255 255 255 / .12);
+    --seg: rgb(255 255 255 / .18);
     --track: rgb(255 255 255 / .08);
-    --border: rgb(255 255 255 / .07);
-    --border-strong: rgb(255 255 255 / .12);
+    --border: rgb(255 255 255 / .08);
+    --border-strong: rgb(255 255 255 / .14);
     --scrim: rgb(0 0 0 / .5);
     --text: #F2F2F4;
     --text-2: #A3A6B5;
@@ -142,7 +145,7 @@
     --tag-green: #7BD699;
     --tag-violet: #C4B5FA;
     --tag-amber: #EDBE6E;
-    --e-2: 0 8px 24px -8px rgb(0 0 0 / .5);
+    --e-2: 0 8px 24px -8px rgb(0 0 0 / .5), 0 1px 2px rgb(0 0 0 / .3);
     --e-3: 0 24px 64px -16px rgb(0 0 0 / .6);
   }
 }
@@ -153,12 +156,12 @@
   --surface: #17181C;
   --surface-2: #202127;
   --surface-3: #2A2B32;
-  --glass: rgb(30 31 36 / .6);
-  --sel: rgb(255 255 255 / .1);
-  --seg: rgb(255 255 255 / .14);
+  --glass: rgb(20 21 26 / .68);
+  --sel: rgb(255 255 255 / .12);
+  --seg: rgb(255 255 255 / .18);
   --track: rgb(255 255 255 / .08);
-  --border: rgb(255 255 255 / .07);
-  --border-strong: rgb(255 255 255 / .12);
+  --border: rgb(255 255 255 / .08);
+  --border-strong: rgb(255 255 255 / .14);
   --scrim: rgb(0 0 0 / .5);
   --text: #F2F2F4;
   --text-2: #A3A6B5;
@@ -172,7 +175,7 @@
   --tag-green: #7BD699;
   --tag-violet: #C4B5FA;
   --tag-amber: #EDBE6E;
-  --e-2: 0 8px 24px -8px rgb(0 0 0 / .5);
+  --e-2: 0 8px 24px -8px rgb(0 0 0 / .5), 0 1px 2px rgb(0 0 0 / .3);
   --e-3: 0 24px 64px -16px rgb(0 0 0 / .6);
 }
 

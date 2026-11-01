@@ -13,14 +13,14 @@ MyMD uses the Soft Order look: calm, soft and precise, with a frosted glass wind
 
 - The whole window uses the Windows Acrylic backdrop with the `--glass` tint.
 - With transparency effects off, the background is solid `--canvas`.
-- The reading panel is always solid `--surface`, with radius `--r-xl`.
+- The reading panel is always solid `--surface`, with radius `--r-xl`, hairline `--border` and `--e-2` elevation.
 - The title bar stays native.
 
 ## Sidebar
 
 - It's 248 px wide, with no panel of its own, in both light and dark.
-- Labels use full-strength `--text` so they stay readable over any wallpaper.
-- The selected row uses `--sel`, and the segmented control's track uses `--track`.
+- Top-level Labels and H1 outline rows use full-strength `--text`, while H2 and H3 outline rows use `--text-2` until hovered or active.
+- The selected row uses `--sel` and medium weight, and the segmented control's track uses `--track`.
 - Below 768 px it becomes a drawer on solid `--surface`.
 
 ## Color

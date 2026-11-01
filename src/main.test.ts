@@ -5,7 +5,16 @@ const fake = vi.hoisted(() => {
   const documents = new Map<string, string>();
   const held = new Map<string, () => void>();
   const holdNext = new Set<string>();
-  const handlers: { folderChanged: (paths: string[]) => void } = { folderChanged: () => {} };
+  const media = { matches: false, addEventListener: () => {} };
+  const handlers: {
+    folderChanged: (paths: string[]) => void;
+    openPath: (path: string) => void;
+    fileDrop: (paths: string[]) => void;
+  } = {
+    folderChanged: () => {},
+    openPath: () => {},
+    fileDrop: () => {},
+  };
   const nameOf = (path: string) => path.split('\\').pop() ?? path;
   const bridge = {
     isBrowser: false,
@@ -22,15 +31,19 @@ const fake = vi.hoisted(() => {
     watchFolder: async () => {},
     allowImages: async () => {},
     imageUrl: (path: string) => path,
-    pickFile: async () => null,
+    pickFile: async (): Promise<string | null> => null,
     openExternal: async () => {},
-    onOpenPath: () => {},
+    onOpenPath(handler: (path: string) => void) {
+      handlers.openPath = handler;
+    },
     onFolderChanged(handler: (paths: string[]) => void) {
       handlers.folderChanged = handler;
     },
-    onFileDrop: () => {},
+    onFileDrop(handler: (paths: string[]) => void) {
+      handlers.fileDrop = handler;
+    },
   };
-  return { documents, held, holdNext, handlers, bridge };
+  return { documents, held, holdNext, handlers, bridge, media };
 });
 
 vi.mock('./platform/bridge', () => ({ bridge: fake.bridge }));
@@ -55,10 +68,17 @@ beforeEach(async () => {
   fake.holdNext.clear();
   fake.documents.set(A, '# Doc A');
   fake.documents.set(B, '# Doc B');
-  vi.stubGlobal('Highlight', class extends Set<Range> {});
+  vi.stubGlobal('Highlight', class extends Set<Range> {
+    constructor(...ranges: Range[]) {
+      super(ranges);
+    }
+  });
   vi.stubGlobal('CSS', { highlights: new Map() });
+  Range.prototype.getBoundingClientRect = () => ({ top: 0, bottom: 0, left: 0, right: 0 }) as DOMRect;
   Element.prototype.scrollIntoView = vi.fn();
-  window.matchMedia = vi.fn().mockReturnValue({ matches: false, addEventListener: vi.fn() });
+  fake.media.matches = false;
+  fake.bridge.pickFile = async () => null;
+  window.matchMedia = vi.fn().mockReturnValue(fake.media);
   const parsed = new DOMParser().parseFromString(shell, 'text/html');
   parsed.querySelector('script')?.remove();
   document.body.replaceChildren(...parsed.body.children);
@@ -143,5 +163,75 @@ describe('the open file going away', () => {
     await vi.waitFor(() => expect(pageText()).toContain('Doc A'));
     expect(element('notice').hidden).toBe(true);
     expect(element('scroller').scrollTop).toBe(40);
+  });
+});
+
+describe('a different file', () => {
+  it('opens at the top after the previous file remembered a scroll position', async () => {
+    element('scroller').scrollTop = 40;
+    fake.documents.delete(A);
+    fake.handlers.folderChanged([A]);
+    await vi.waitFor(() => expect(element('notice').hidden).toBe(false));
+    fake.documents.set(B, '');
+    row(B)?.click();
+    await vi.waitFor(() => expect(element('notice-title').textContent).toBe('This file is empty.'));
+    fake.documents.set(B, '# Doc B');
+    fake.handlers.folderChanged([B]);
+    await vi.waitFor(() => expect(pageText()).toContain('Doc B'));
+    expect(element('scroller').scrollTop).toBe(0);
+  });
+
+  it('starts find at the first match', async () => {
+    fake.documents.set(A, 'one one');
+    fake.documents.set(B, 'one one');
+    fake.handlers.folderChanged([A]);
+    await vi.waitFor(() => expect(pageText()).toContain('one one'));
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true }));
+    const input = element('find-input') as HTMLInputElement;
+    input.value = 'one';
+    input.dispatchEvent(new Event('input'));
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    expect(element('find-count').textContent).toBe('2 of 2');
+    row(B)?.click();
+    await vi.waitFor(() => expect(element('doc-name').textContent).toBe('b.md'));
+    expect(element('find-count').textContent).toBe('1 of 2');
+  });
+});
+
+describe('the narrow sidebar', () => {
+  async function openDrawer() {
+    fake.media.matches = true;
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'b', ctrlKey: true }));
+    expect(element('sidebar').hidden).toBe(false);
+  }
+
+  it('closes when a file is picked', async () => {
+    await openDrawer();
+    fake.bridge.pickFile = async () => B;
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'o', ctrlKey: true }));
+    await vi.waitFor(() => expect(pageText()).toContain('Doc B'));
+    expect(element('sidebar').hidden).toBe(true);
+  });
+
+  it('closes when a file is dropped', async () => {
+    await openDrawer();
+    fake.handlers.fileDrop([B]);
+    await vi.waitFor(() => expect(pageText()).toContain('Doc B'));
+    expect(element('sidebar').hidden).toBe(true);
+  });
+
+  it('closes when a second launch opens a file', async () => {
+    await openDrawer();
+    fake.handlers.openPath(B);
+    await vi.waitFor(() => expect(pageText()).toContain('Doc B'));
+    expect(element('sidebar').hidden).toBe(true);
+  });
+
+  it('stays open when the open file is saved', async () => {
+    await openDrawer();
+    fake.documents.set(A, '# Doc A saved');
+    fake.handlers.folderChanged([A]);
+    await vi.waitFor(() => expect(pageText()).toContain('Doc A saved'));
+    expect(element('sidebar').hidden).toBe(false);
   });
 });

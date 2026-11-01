@@ -65,7 +65,9 @@ html[data-shell="browser"] #app {
   margin: var(--s-2);
   overflow: clip;
   background: var(--surface);
+  border: var(--s-px) solid var(--border);
   border-radius: var(--r-xl);
+  box-shadow: var(--e-2);
 }
 
 #topbar {
@@ -74,7 +76,8 @@ html[data-shell="browser"] #app {
   align-items: center;
   gap: var(--s-2);
   height: var(--topbar-h);
-  padding-inline: var(--s-3);
+  padding-inline: var(--s-4);
+  border-bottom: var(--s-px) solid var(--border);
   user-select: none;
 }
 
@@ -82,7 +85,7 @@ html[data-shell="browser"] #app {
   min-width: 0;
   overflow: hidden;
   font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-semi);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -91,9 +94,16 @@ html[data-shell="browser"] #app {
   min-width: 0;
   overflow: hidden;
   color: var(--text-2);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+#doc-status:not(:empty) {
+  padding: var(--s-half) var(--s-2);
+  background: var(--surface-2);
+  border: var(--s-px) solid var(--border);
+  border-radius: var(--r-full);
 }
 
 #find-slot {
@@ -101,6 +111,19 @@ html[data-shell="browser"] #app {
   flex: 0 1 var(--find-w);
   min-width: 0;
   margin-left: auto;
+  opacity: 1;
+  transition:
+    display var(--t-fast) var(--ease),
+    opacity var(--t-fast) var(--ease),
+    transform var(--t-fast) var(--ease);
+  transition-behavior: allow-discrete;
+}
+
+@starting-style {
+  #find-slot {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--s-1)));
+  }
 }
 
 .find {
@@ -112,8 +135,9 @@ html[data-shell="browser"] #app {
   padding-inline: var(--s-3);
   color: var(--text-2);
   background: var(--surface-2);
+  border: var(--s-px) solid var(--border);
   border-radius: var(--r-full);
-  transition: background var(--t-fast) var(--ease);
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
 }
 
 .find:hover {
@@ -188,7 +212,7 @@ html[data-shell="browser"] #app {
   gap: var(--s-3);
   width: var(--sidebar-w);
   min-height: 0;
-  padding: var(--s-2) 0 var(--s-2) var(--s-2);
+  padding: var(--s-3) var(--s-1) var(--s-3) var(--s-3);
   user-select: none;
 }
 
@@ -203,15 +227,17 @@ html[data-shell="browser"] #app {
 .segmented [role="tab"] {
   flex: 1;
   height: var(--control-sm);
+  color: var(--text-2);
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
   background: transparent;
   border: 0;
   border-radius: var(--r-full);
-  transition: background var(--t-fast) var(--ease);
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 
 .segmented [role="tab"]:hover {
+  color: var(--text);
   background: var(--sel);
 }
 
@@ -220,6 +246,8 @@ html[data-shell="browser"] #app {
 }
 
 .segmented [role="tab"][aria-selected="true"] {
+  color: var(--text);
+  font-weight: var(--fw-semi);
   background: var(--seg);
   box-shadow: var(--e-1);
 }
@@ -253,15 +281,18 @@ html[data-shell="browser"] #app {
   background: transparent;
   border: 0;
   border-radius: var(--r-md);
-  transition: background var(--t-fast) var(--ease);
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 
 .side-row:hover {
+  color: var(--text);
   background: var(--track);
 }
 
 .side-row:active,
 .side-row[aria-current="true"] {
+  color: var(--text);
+  font-weight: var(--fw-medium);
   background: var(--sel);
 }
 
@@ -280,17 +311,31 @@ html[data-shell="browser"] #app {
   box-shadow: var(--focus-inset);
 }
 
+.side-row[data-level="1"] {
+  font-weight: var(--fw-medium);
+}
+
 .side-row[data-level="2"] {
   padding-inline-start: var(--s-8);
+  color: var(--text-2);
 }
 
 .side-row[data-level="3"] {
   padding-inline-start: var(--s-10);
+  color: var(--text-2);
+}
+
+.side-row[data-level="2"]:hover,
+.side-row[data-level="3"]:hover,
+.side-row[data-level="2"][aria-current="true"],
+.side-row[data-level="3"][aria-current="true"] {
+  color: var(--text);
 }
 
 .side-empty {
   margin: 0;
   padding: var(--s-2) var(--s-3);
+  color: var(--text-2);
   font-size: var(--fs-sm);
 }
 
@@ -303,12 +348,19 @@ html[data-shell="browser"] #app {
     inset-block: 0;
     inset-inline-start: 0;
     z-index: 2;
-    padding: var(--s-2);
+    padding: var(--s-3);
     background: var(--surface);
+    border-inline-end: var(--s-px) solid var(--border);
     box-shadow: var(--e-3);
-    transition: opacity var(--t) var(--ease), transform var(--t) var(--ease);
+    transition:
+      display var(--t) var(--ease),
+      opacity var(--t) var(--ease),
+      transform var(--t) var(--ease);
+    transition-behavior: allow-discrete;
+  }
 
-    @starting-style {
+  @starting-style {
+    #sidebar {
       opacity: 0;
       transform: translateX(calc(-1 * var(--s-2)));
     }
@@ -337,9 +389,14 @@ html[data-shell="browser"] #app {
 }
 
 .notice-icon {
-  width: var(--icon-xl);
-  height: var(--icon-xl);
-  color: var(--text-3);
+  width: var(--icon-box);
+  height: var(--icon-box);
+  padding: var(--s-4);
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: var(--s-px) solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e-1);
 }
 
 #notice p {
@@ -347,7 +404,8 @@ html[data-shell="browser"] #app {
 }
 
 #notice-title {
-  font-size: var(--fs-md);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semi);
 }
 
 #notice-body {
@@ -363,10 +421,11 @@ html[data-shell="browser"] #app {
 }
 
 .chip {
-  padding: var(--s-px) var(--s-2);
+  padding: var(--s-1) var(--s-3);
   color: var(--text-2);
   font-size: var(--fs-xs);
   background: var(--surface-2);
+  border: var(--s-px) solid var(--border);
   border-radius: var(--r-xs);
 }
 
@@ -387,7 +446,9 @@ html[data-shell="browser"] #app {
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
   background: var(--surface-2);
+  border: var(--s-px) solid var(--border-strong);
   border-radius: var(--r-full);
+  box-shadow: var(--e-1);
 }
 
 .button:hover {
@@ -419,4 +480,18 @@ html[data-shell="browser"] #app {
 .icon-button:active {
   background: var(--surface-3);
   transform: scale(var(--press));
+}
+
+@media (forced-colors: active) {
+  :focus-visible,
+  .find:focus-within,
+  #scroller:focus-visible,
+  .side-row:focus-visible {
+    outline: var(--s-half) solid Highlight;
+  }
+
+  .segmented [role="tab"][aria-selected="true"],
+  .side-row[aria-current="true"] {
+    outline: var(--s-px) solid Highlight;
+  }
 }

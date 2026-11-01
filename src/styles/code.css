@@ -3,6 +3,7 @@
   font-family: var(--font-mono);
   font-size: var(--fs-code);
   background: var(--surface-2);
+  border: var(--s-px) solid var(--border);
   border-radius: var(--r-xs);
 }
 
@@ -12,6 +13,7 @@
   line-height: var(--lh-code);
   tab-size: var(--tab-size);
   background: var(--surface-2);
+  border: var(--s-px) solid var(--border);
   border-radius: var(--r-md);
   scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
@@ -20,6 +22,7 @@
 .prose pre code {
   padding: 0;
   background: none;
+  border: 0;
 }
 
 .hljs-keyword,

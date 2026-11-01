@@ -49,5 +49,9 @@ export function currentHeadingId(items: OutlineItem[], root: HTMLElement, scroll
 }
 
 export function scrollToHeading(root: HTMLElement, id: string): void {
-  headingsIn(root).find((heading) => heading.id === id)?.scrollIntoView();
+  if (!id) return;
+  const target = headingsIn(root).find((heading) => heading.id === id)
+    ?? [...root.querySelectorAll<HTMLElement>('[id]')].find((element) => element.id === id)
+    ?? [...root.querySelectorAll<HTMLElement>('a[name]')].find((anchor) => anchor.getAttribute('name') === id);
+  target?.scrollIntoView();
 }

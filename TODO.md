@@ -4,6 +4,7 @@ Task detail lives in the [implementation plan](docs/superpowers/plans/2026-10-31
 
 ## Now
 
+- [x] Visual and interface polish (panel depth, glass contrast, sidebar & topbar alignment, prose/code borders, empty state and app icon)
 - [x] Maintainer: review the plan and choose how it gets built (Native)
 - [x] Maintainer: say when to start building
 - [x] Maintainer: confirm the MIT license
@@ -37,13 +38,13 @@ Each of these waits for the maintainer's go-ahead.
 
 ## Next
 
-The reading-session plan is written and not started: [Reading session fixes](docs/superpowers/plans/2026-11-01-reading-session-fixes.md).
+The reading-session plan is finished: [Reading session fixes](docs/superpowers/plans/2026-11-01-reading-session-fixes.md).
 
-- [ ] Task 1: Reset the remembered scroll position
-- [ ] Task 2: Close the drawer on outside opens
-- [ ] Task 3: Restart find on a different document
-- [ ] Task 4: Scroll to named anchors
-- [ ] Task 5: Record the fixes
+- [x] Task 1: Reset the remembered scroll position
+- [x] Task 2: Close the drawer on outside opens
+- [x] Task 3: Restart find on a different document
+- [x] Task 4: Scroll to named anchors
+- [x] Task 5: Record the fixes
 
 ## Later
 

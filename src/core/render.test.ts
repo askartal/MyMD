@@ -33,6 +33,12 @@ describe('renderMarkdown', () => {
   });
   it('survives an unclosed fence', () => expect(renderMarkdown('```js\nconst a')).toContain('<code'));
   it('returns nothing for an empty file', () => expect(renderMarkdown('')).toBe(''));
+  it('keeps named anchors and element ids', () => {
+    const html = renderMarkdown('<a name="note"></a>\n\n<p id="note">Here</p>\n\n[here](#note)');
+    expect(html).toContain('name="note"');
+    expect(html).toContain('id="note"');
+    expect(html).toContain('href="#note"');
+  });
 });
 
 describe('front matter that only looks like it', () => {

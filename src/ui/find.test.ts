@@ -98,6 +98,24 @@ describe('FindController', () => {
     find.refresh();
     expect(onChange).toHaveBeenLastCalledWith(1, 3);
   });
+  it('starts at the first match when restarted', () => {
+    const find = new FindController(root, onChange);
+    find.search('one');
+    find.next();
+    root.innerHTML = '<p>one two one two one</p>';
+    find.restart();
+    expect(onChange).toHaveBeenLastCalledWith(0, 3);
+  });
+  it('leaves the reading position alone on restart', () => {
+    const find = new FindController(root, onChange);
+    find.search('one');
+    find.next();
+    scroller.scrollTop = 0;
+    root.innerHTML = '<p>one two one</p>';
+    find.restart();
+    expect(scroller.scrollTop).toBe(0);
+    expect(onChange).toHaveBeenLastCalledWith(0, 2);
+  });
   it('clamps the position when matches disappear', () => {
     const find = new FindController(root, onChange);
     find.search('one');

@@ -41,6 +41,7 @@ v0.1.0 is published. The next code change is this plan. Three later batches are 
 - Modify: `src/core/outline.ts` — fragment lookup
 - Modify: `src/core/outline.test.ts` — heading, id and `a[name]`
 - Modify: `src/core/render.test.ts` — guard that `name` and `id` survive sanitizing
+- Modify: `src/styles/prose.css` — link styling only on `a[href]`, scroll margin on `[id]` and `a[name]`
 - Modify: `TODO.md`, `HANDOFF.md`, `CHANGELOG.md` — Task 5
 
 ---
@@ -49,16 +50,16 @@ v0.1.0 is published. The next code change is this plan. Three later batches are 
 
 **Files:**
 - Modify: `src/main.test.ts`
-- Modify: `src/main.ts` (`showDocument` around the `scrollTop` assignment, `showFailure`)
+- Modify: `src/main.ts` (`setCurrentDocument`, `showDocument`)
 - Test: `src/main.test.ts`
 
 **Interfaces:**
 - Consumes: `readingTop`, `setCurrentDocument`, `showNotice`, `showDocument`, `showFailure`
-- Produces: a new document leaves `readingTop` at 0. A refresh of the same document still uses the saved offset when the page is hidden.
+- Produces: a new document resets `readingTop` and `scroller.scrollTop` to 0 before any notice or content renders. A refresh of the same document still uses the saved offset when the page is hidden.
 
 The existing test `returns to the same place` must stay green. It deletes `a.md` at scroll 40 and restores that same file.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add this describe block at the end of `src/main.test.ts`:
 
@@ -80,60 +81,60 @@ describe('a different file', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run src/main.test.ts`
 
 Expected: FAIL in `opens at the top after the previous file remembered a scroll position`. `scrollTop` is 40.
 
-- [ ] **Step 3: Clear the saved offset when the path changes**
+- [x] **Step 3: Clear the saved offset when the path changes**
 
-In `showDocument`, decide whether the path is new before reading `readingTop`, and forget that offset after the new page is shown. A fragment still scrolls after the top is set.
+In `setCurrentDocument`, reset both `readingTop` and `scroller.scrollTop` to `0` when `isNew` is `true`. In `showDocument`, call `setCurrentDocument` before reading `scrollTop` and keep the existing comment.
+
+```typescript
+function setCurrentDocument(path: string, name: string): boolean {
+  const isNew = !currentPath || !samePath(currentPath, path);
+  if (isNew) {
+    readingTop = 0;
+    scroller.scrollTop = 0;
+    sidebarOverride = null;
+    setStatus('');
+  }
+  currentPath = path;
+  toggleButton.hidden = false;
+  docName.textContent = name;
+  void bridge.setTitle(`${name} - MyMD`);
+  watchFolderOf(path);
+  return isNew;
+}
+```
 
 ```typescript
 function showDocument({ data, content, files }: Awaited<ReturnType<typeof loadDocument>>, options: OpenOptions): void {
+  // The sidebar's start state is set once per document, so a refresh never moves the page.
   const isNew = setCurrentDocument(data.path, data.name);
   if (isNew) fileCount = files.length;
-  const scrollTop = isNew ? 0 : (doc.hidden ? readingTop : scroller.scrollTop);
+  const scrollTop = doc.hidden ? readingTop : scroller.scrollTop;
   if (stripFrontMatter(data.text).trim() === '') showNotice({ title: 'This file is empty.', body: '' });
   else showContent(content);
   sidebar.setFiles(files, data.path);
   applySidebar();
-  if (isNew) readingTop = 0;
-  scroller.scrollTop = !isNew && options.keepScroll ? scrollTop : 0;
+  scroller.scrollTop = options.keepScroll ? scrollTop : 0;
   if (options.fragment) scrollToHeading(doc, options.fragment);
   updateCurrentHeading();
   restoreFocus();
 }
 ```
 
-`showNotice` can copy the visible scroll into `readingTop` before the line above clears it. The clear has to stay after `showNotice`.
+Because `setCurrentDocument` zeroes both `readingTop` and `scroller.scrollTop` when `isNew` is `true`, `showNotice` (both for an empty file in `showDocument` and a failed open in `showFailure`) never copies the previous file's scroll offset into `readingTop`.
 
-Do the same when a different path fails to open. `showFailure` becomes:
-
-```typescript
-function showFailure(path: string, error: unknown): void {
-  const name = fileNameOf(path);
-  const isNew = setCurrentDocument(path, name);
-  if (isNew) sidebarOverride = sidebarOpen;
-  setStatus('');
-  showNotice(noticeFor(error, name));
-  if (isNew) readingTop = 0;
-  applySidebar();
-  restoreFocus();
-  void refreshFiles();
-}
-```
-
-Leave `setCurrentDocument` itself alone. Clearing `readingTop` inside it is too early: `showNotice` would save the previous file's scroll again.
-
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run src/main.test.ts`
 
 Expected: PASS, including `returns to the same place` and the new test.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/main.ts src/main.test.ts TODO.md
@@ -157,7 +158,7 @@ Tick Task 1 under Next in `TODO.md` before the commit.
 
 `drawerQuery` is the object returned by `matchMedia` at import. The test has to keep that same object and flip `matches`, or the module never sees the drawer width.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `drawerQuery` in `src/main.ts` keeps the object `matchMedia` returned when the module loaded. The test flips `matches` on that same object.
 
@@ -239,13 +240,13 @@ describe('the narrow sidebar', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `npx vitest run src/main.test.ts`
 
 Expected: FAIL in `closes when a file is picked`, `closes when a file is dropped`, and `closes when a second launch opens a file`. The sidebar stays visible (`hidden` is false). `stays open when the open file is saved` passes.
 
-- [ ] **Step 3: Close the drawer at those three entries**
+- [x] **Step 3: Close the drawer at those three entries**
 
 ```typescript
 function openFirstMarkdown(paths: string[]): void {
@@ -264,13 +265,13 @@ async function pickAndOpen(): Promise<void> {
 
 A drop or second launch with no Markdown path leaves the drawer alone, because no file opens. `Ctrl+O` closes the drawer when the picker opens. Sidebar clicks already call `closeDrawer` and stay that way. Do not call `closeDrawer` from `openDocument` or `refreshDocument`.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run src/main.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/main.ts src/main.test.ts TODO.md
@@ -294,7 +295,7 @@ Tick Task 2 under Next in `TODO.md` before the commit.
 - Consumes: `FindController.refresh()`, `FindController.search()`
 - Produces: `FindController.restart(): void`. Sets the index to the first match of the current query and does not scroll. A missing query does nothing, the same as `refresh()`.
 
-- [ ] **Step 1: Write the failing unit test**
+- [x] **Step 1: Write the failing unit test**
 
 Add both tests inside `describe('FindController')` in `src/ui/find.test.ts`, after `keeps the position across a refresh`:
 
@@ -320,13 +321,13 @@ it('leaves the reading position alone on restart', () => {
 });
 ```
 
-- [ ] **Step 2: Run the unit test to verify it fails**
+- [x] **Step 2: Run the unit test to verify it fails**
 
 Run: `npx vitest run src/ui/find.test.ts`
 
 Expected: FAIL because `find.restart` is not a function.
 
-- [ ] **Step 3: Add restart**
+- [x] **Step 3: Add restart**
 
 In `src/ui/find.ts`, next to `refresh`:
 
@@ -340,13 +341,25 @@ restart(): void {
 
 `update` runs after the index is set to 0, so the clamp keeps the first match. It must not call `revealCurrent`.
 
-- [ ] **Step 4: Run the unit test to verify it passes**
+- [x] **Step 4: Run the unit test to verify it passes**
 
 Run: `npx vitest run src/ui/find.test.ts`
 
 Expected: PASS, including `keeps the position across a refresh`.
 
-- [ ] **Step 5: Write the failing wiring test**
+- [x] **Step 5: Write the failing wiring test**
+
+In `beforeEach` in `src/main.test.ts`, match the `Highlight` and `Range` stubs from `src/ui/find.test.ts` so `new Highlight(range)` and `range.getBoundingClientRect()` work in jsdom:
+
+```typescript
+  vi.stubGlobal('Highlight', class extends Set<Range> {
+    constructor(...ranges: Range[]) {
+      super(ranges);
+    }
+  });
+  vi.stubGlobal('CSS', { highlights: new Map() });
+  Range.prototype.getBoundingClientRect = () => ({ top: 0, bottom: 0, left: 0, right: 0 }) as DOMRect;
+```
 
 Add this test to `describe('a different file')` in `src/main.test.ts`:
 
@@ -368,13 +381,13 @@ it('starts find at the first match', async () => {
 });
 ```
 
-- [ ] **Step 6: Run the wiring test to verify it fails**
+- [x] **Step 6: Run the wiring test to verify it fails**
 
 Run: `npx vitest run src/main.test.ts`
 
 Expected: FAIL. The count stays `2 of 2`.
 
-- [ ] **Step 7: Restart only when the document is new**
+- [x] **Step 7: Restart only when the document is new**
 
 `showContent` takes the flag from the `isNew` value Task 1 already computes:
 
@@ -392,13 +405,13 @@ function showContent(content: DocumentFragment, restartFind: boolean): void {
 
 In `showDocument`, change the content branch to `showContent(content, isNew)`. Leave the `find.refresh()` call inside `showNotice` as it is. A notice has no matches, and a refresh of the same file still goes through `showContent(content, false)`.
 
-- [ ] **Step 8: Run the tests to verify they pass**
+- [x] **Step 8: Run the tests to verify they pass**
 
 Run: `npx vitest run src/ui/find.test.ts src/main.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/ui/find.ts src/ui/find.test.ts src/main.ts src/main.test.ts TODO.md
@@ -415,6 +428,7 @@ Tick Task 3 under Next in `TODO.md` before the commit.
 - Modify: `src/core/outline.test.ts`
 - Modify: `src/core/outline.ts` (`scrollToHeading`)
 - Modify: `src/core/render.test.ts`
+- Modify: `src/styles/prose.css`
 - Test: `src/core/outline.test.ts`, `src/core/render.test.ts`
 
 **Interfaces:**
@@ -423,7 +437,7 @@ Tick Task 3 under Next in `TODO.md` before the commit.
 
 `renderMarkdown` already keeps `name` and `id`. The render test is a guard. It should pass with no change to `src/core/render.ts`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add this import and describe block to `src/core/outline.test.ts`:
 
@@ -433,6 +447,8 @@ import { buildOutline, currentHeadingId, scrollToHeading } from './outline';
 
 ```typescript
 describe('scrollToHeading', () => {
+  Element.prototype.scrollIntoView = () => {};
+
   it('scrolls to a heading id', () => {
     const root = doc('<h2>Setup</h2>');
     buildOutline(root);
@@ -488,39 +504,64 @@ it('keeps named anchors and element ids', () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify the new lookups fail**
+- [x] **Step 2: Run the tests to verify the new lookups fail**
 
 Run: `npx vitest run src/core/outline.test.ts src/core/render.test.ts`
 
 Expected: FAIL in `scrolls to an element id` and `scrolls to a named anchor`. The heading test, the preference test, the missing-id test and the render guard pass.
 
-- [ ] **Step 3: Look past headings**
+- [x] **Step 3: Look past headings**
 
 Replace `scrollToHeading` in `src/core/outline.ts`:
 
 ```typescript
 export function scrollToHeading(root: HTMLElement, id: string): void {
   if (!id) return;
-  const escaped = CSS.escape(id);
   const target = headingsIn(root).find((heading) => heading.id === id)
-    ?? root.querySelector<HTMLElement>(`#${escaped}`)
-    ?? root.querySelector<HTMLElement>(`a[name="${escaped}"]`);
+    ?? [...root.querySelectorAll<HTMLElement>('[id]')].find((element) => element.id === id)
+    ?? [...root.querySelectorAll<HTMLElement>('a[name]')].find((anchor) => anchor.getAttribute('name') === id);
   target?.scrollIntoView();
 }
 ```
 
-An empty id returns before `querySelector`. `CSS.escape` is present in the jsdom used by Vitest and in WebView2. Callers in `src/main.ts` stay as they are: outline clicks, `#fragment` links, and document links with a fragment all use this function.
+Matching attribute values directly avoids selector escaping and does not depend on `window.CSS.escape` (which test suites stub out when mocking `CSS.highlights`). Callers in `src/main.ts` stay as they are: outline clicks, `#fragment` links, and document links with a fragment all use this function.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+In `src/styles/prose.css`, give `[id]` and `a[name]` the same scroll margin as headings, and scope link rules to `a[href]` so named anchors without `href` are not styled as links:
+
+```css
+.prose :is([id], a[name]) {
+  scroll-margin-top: var(--s-6);
+}
+
+.prose a[href] {
+  color: var(--peri-ink);
+  border-radius: var(--r-xs);
+  text-decoration-line: underline;
+  text-decoration-color: var(--border-strong);
+  text-decoration-thickness: var(--s-px);
+  text-underline-offset: var(--s-1);
+  transition: text-decoration-color var(--t-fast) var(--ease);
+}
+
+.prose a[href]:hover {
+  text-decoration-color: currentColor;
+}
+
+.prose a[href]:active {
+  color: var(--text);
+}
+```
+
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run src/core/outline.test.ts src/core/render.test.ts`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
-git add src/core/outline.ts src/core/outline.test.ts src/core/render.test.ts TODO.md
+git add src/core/outline.ts src/core/outline.test.ts src/core/render.test.ts src/styles/prose.css TODO.md
 git commit -m "fix: scroll to named anchors"
 ```
 
@@ -539,7 +580,7 @@ Tick Task 4 under Next in `TODO.md` before the commit.
 - Consumes: the four behavior changes from Tasks 1 to 4
 - Produces: the notes the next session reads
 
-- [ ] **Step 1: Run the full checks**
+- [x] **Step 1: Run the full checks**
 
 Run: `npm test`
 
@@ -549,7 +590,7 @@ Run: `npm run build`
 
 Expected: exit 0.
 
-- [ ] **Step 2: Update the notes**
+- [x] **Step 2: Update the notes**
 
 Under `## [Unreleased]` in `CHANGELOG.md`, add a `### Fixed` list:
 
@@ -566,7 +607,7 @@ In `TODO.md`, tick Task 5. Leave the Later list and the remaining Deferred list 
 
 Rewrite the Next step in `HANDOFF.md` so a cold start sees these four fixes as done, and points at "Not in this plan" below for the following batch. Keep the person-only checks as they are.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add TODO.md HANDOFF.md CHANGELOG.md

@@ -1,7 +1,7 @@
 .prose {
   max-width: var(--measure);
   margin-inline: auto;
-  padding: var(--s-6) var(--s-6) var(--s-16);
+  padding: var(--s-8) var(--s-8) var(--s-16);
   font-size: var(--fs-read);
   line-height: var(--lh-read);
   overflow-wrap: break-word;
@@ -58,9 +58,11 @@
 
 .prose h2 {
   margin-block: var(--s-10) var(--s-3);
+  padding-bottom: var(--s-2);
   font-size: var(--fs-xl);
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-title);
+  border-bottom: var(--s-px) solid var(--border);
 }
 
 .prose h3 {
@@ -77,7 +79,11 @@
   font-weight: var(--fw-semi);
 }
 
-.prose a {
+.prose :is([id], a[name]) {
+  scroll-margin-top: var(--s-6);
+}
+
+.prose a[href] {
   color: var(--peri-ink);
   border-radius: var(--r-xs);
   text-decoration-line: underline;
@@ -87,11 +93,11 @@
   transition: text-decoration-color var(--t-fast) var(--ease);
 }
 
-.prose a:hover {
+.prose a[href]:hover {
   text-decoration-color: currentColor;
 }
 
-.prose a:active {
+.prose a[href]:active {
   color: var(--text);
 }
 
@@ -159,6 +165,7 @@
   padding: var(--s-3) var(--s-4);
   color: var(--text-2);
   background: var(--surface-2);
+  border-inline-start: var(--quote-line) solid var(--border-strong);
   border-radius: var(--r-md);
 }
 
@@ -190,6 +197,8 @@
 
 .prose .table-wrap {
   overflow-x: auto;
+  border: var(--s-px) solid var(--border);
+  border-radius: var(--r-md);
   scrollbar-color: var(--border-strong) transparent;
   scrollbar-width: thin;
 }
@@ -212,7 +221,12 @@
 .prose th {
   font-weight: var(--fw-semi);
   white-space: nowrap;
+  background: var(--surface-2);
   border-bottom-color: var(--border-strong);
+}
+
+.prose tr:last-child td {
+  border-bottom: 0;
 }
 
 .prose summary {

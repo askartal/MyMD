@@ -101,6 +101,12 @@ export class FindController {
     if (this.query) this.update();
   }
 
+  restart(): void {
+    if (!this.query) return;
+    this.index = 0;
+    this.update();
+  }
+
   clear(): void {
     this.query = '';
     this.ranges = [];

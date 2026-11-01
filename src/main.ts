@@ -187,6 +187,8 @@ function fileNameOf(path: string): string {
 function setCurrentDocument(path: string, name: string): boolean {
   const isNew = !currentPath || !samePath(currentPath, path);
   if (isNew) {
+    readingTop = 0;
+    scroller.scrollTop = 0;
     sidebarOverride = null;
     setStatus('');
   }
@@ -198,13 +200,14 @@ function setCurrentDocument(path: string, name: string): boolean {
   return isNew;
 }
 
-function showContent(content: DocumentFragment): void {
+function showContent(content: DocumentFragment, restartFind: boolean): void {
   doc.replaceChildren(content);
   doc.hidden = false;
   notice.hidden = true;
   outline = buildOutline(doc);
   sidebar.setOutline(outline);
-  find.refresh();
+  if (restartFind) find.restart();
+  else find.refresh();
 }
 
 function showNotice({ title, body }: { title: string; body: string }): void {
@@ -236,11 +239,12 @@ async function loadDocument(path: string) {
 }
 
 function showDocument({ data, content, files }: Awaited<ReturnType<typeof loadDocument>>, options: OpenOptions): void {
-  const scrollTop = doc.hidden ? readingTop : scroller.scrollTop;
   // The sidebar's start state is set once per document, so a refresh never moves the page.
-  if (setCurrentDocument(data.path, data.name)) fileCount = files.length;
+  const isNew = setCurrentDocument(data.path, data.name);
+  if (isNew) fileCount = files.length;
+  const scrollTop = doc.hidden ? readingTop : scroller.scrollTop;
   if (stripFrontMatter(data.text).trim() === '') showNotice({ title: 'This file is empty.', body: '' });
-  else showContent(content);
+  else showContent(content, isNew);
   sidebar.setFiles(files, data.path);
   applySidebar();
   scroller.scrollTop = options.keepScroll ? scrollTop : 0;
@@ -293,10 +297,13 @@ function handleFolderChange(paths: string[]): void {
 
 function openFirstMarkdown(paths: string[]): void {
   const path = paths.find(isMarkdownPath);
-  if (path) void openDocument(path);
+  if (!path) return;
+  closeDrawer();
+  void openDocument(path);
 }
 
 async function pickAndOpen(): Promise<void> {
+  closeDrawer();
   const path = await bridge.pickFile();
   if (path) await openDocument(path);
 }
