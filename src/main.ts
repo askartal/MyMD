@@ -46,7 +46,6 @@ const noticeTitle = shellElement('notice-title');
 const noticeBody = shellElement('notice-body');
 const noticeOpen = shellElement('notice-open');
 const noticeHints = shellElement('notice-hints');
-const findSlot = shellElement('find-slot');
 const findInput = shellElement<HTMLInputElement>('find-input');
 const findCount = shellElement('find-count');
 
@@ -130,15 +129,13 @@ function closeDrawer(): void {
 }
 
 function openFind(): void {
-  if (!currentPath) return;
+  if (findInput.disabled) return;
   closeDrawer();
-  findSlot.hidden = false;
   findInput.focus();
   findInput.select();
 }
 
 function closeFind(): void {
-  findSlot.hidden = true;
   findInput.value = '';
   findCount.textContent = '';
   find.clear();
@@ -192,6 +189,7 @@ function setCurrentDocument(path: string, name: string): boolean {
   }
   currentPath = path;
   toggleButton.hidden = false;
+  findInput.disabled = false;
   docName.textContent = name;
   void bridge.setTitle(`${name} - MyMD`);
   watchFolderOf(path);
@@ -368,7 +366,7 @@ window.addEventListener('keydown', (event) => {
   if (isBlockedKey(event)) event.preventDefault();
   if (event.key === 'Escape') {
     if (drawerOpen) closeDrawer();
-    else if (!findSlot.hidden) closeFind();
+    else if (document.activeElement === findInput || findInput.value) closeFind();
   }
   if (!event.ctrlKey) return;
   if (key === 'o') {
@@ -398,8 +396,27 @@ bridge.onFolderChanged((paths) => {
   else handleFolderChange(paths);
 });
 
+function bindCaption(): void {
+  const maximize = shellElement('win-maximize');
+  const syncMaximized = () => {
+    void bridge.isMaximized().then((maximized) => {
+      document.documentElement.classList.toggle('is-maximized', maximized);
+      maximize.setAttribute('aria-label', maximized ? 'Restore' : 'Maximize');
+    });
+  };
+  shellElement('win-minimize').addEventListener('click', () => void bridge.minimize());
+  maximize.addEventListener('click', () => void bridge.toggleMaximize().then(syncMaximized));
+  shellElement('win-close').addEventListener('click', () => void bridge.close());
+  bridge.onResized(syncMaximized);
+  syncMaximized();
+}
+
 async function start(): Promise<void> {
   if (bridge.isBrowser) document.documentElement.dataset.shell = 'browser';
+  else {
+    document.documentElement.dataset.shell = 'app';
+    bindCaption();
+  }
   sidebar.setView(recall(SIDEBAR_VIEW_KEY) === 'outline' ? 'outline' : 'files');
   try {
     const path = await bridge.initialPath();

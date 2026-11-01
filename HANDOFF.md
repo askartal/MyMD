@@ -6,9 +6,10 @@ Rewrite this file at the end of every session so the next one can start cold.
 
 ## Current state
 
+- The window is undecorated. The toolbar is the top edge and holds the file name, find, and minimize, maximize and close. This is not committed. Tauri cannot overlay the page under the native Windows caption.
 - All 11 plan tasks are built and merged into `main`, which is pushed to GitHub, and CI passes.
 - `v0.1.0` is published: https://github.com/askartal/MyMD/releases/tag/v0.1.0
-- 149 TypeScript tests and 14 Rust tests pass, and `npm run build` and `npm run tauri build` both finish.
+- 150 TypeScript tests pass, and `npm run build` passes. Rust sources are untouched. The window is undecorated, which still needs a look in the real window.
 - The whole-branch review is done, and its Critical and Important findings are fixed and tested. Deferred minors are under "Later" in `TODO.md`.
 - The installer is `MyMD_0.1.0_x64-setup.exe`, 2.4 MiB, and it's installed on the development PC.
 - `origin` is https://github.com/askartal/MyMD, and the repository is public.
@@ -16,7 +17,7 @@ Rewrite this file at the end of every session so the next one can start cold.
 
 ## Next step
 
-The build is finished. What's left waits on the maintainer.
+The toolbar is in the working tree. The maintainer should look at it in the real window, then say if it should be committed.
 
 ## Waiting on the maintainer
 
@@ -25,7 +26,7 @@ The build is finished. What's left waits on the maintainer.
 ## Checks only a person can make
 
 - Acrylic stays smooth while dragging and resizing. If it lags, change `acrylic` to `mica` in `tauri.conf.json` and record it in `docs/DECISIONS.md`.
-- The title bar looks right in Windows light mode. See "Known risks".
+- The undecorated window: the toolbar drags, a double-click on an empty part maximizes, minimize and close work, resize still works, and Acrylic and the rounded corners still look right. The Snap Layouts flyout will not appear on the maximize button. Check light mode as well as dark.
 - The sidebar stays readable over light and dark wallpaper.
 - Turning off Windows transparency effects gives the solid canvas.
 - Light and dark follow the Windows setting when it changes.
@@ -52,7 +53,7 @@ The browser pane doesn't paint reliably while it's hidden, so layout captures ar
 ## Known risks
 
 - **Acrylic may lag** while dragging or resizing, and this Windows build is one where that's known to happen.
-- **The title bar has no tint.** It shows the Acrylic backdrop but not the app's `--glass` tint, so with a forced light theme over a dark wallpaper it reads darker than the window below it. If that looks wrong in real light mode, set `DWMWA_CAPTION_COLOR` from Rust, as the spec allows.
+- **Snap Layouts do not appear on the maximize button.** The window is undecorated so the toolbar can be the top edge. Dragging to a screen edge may still snap. An undecorated window with `shadow: true` can also show a 1 px border; if that looks wrong, set `shadow` to `false` in `tauri.conf.json` and record it here.
 - **SmartScreen warns on downloaded installers** because releases aren't code-signed. The README explains this.
 - **A live refresh waits for any load in flight.** A read that hangs, such as on a dead network share, holds back refreshes until it fails.
 - **A pathological document can freeze the window.** Rendering runs on the interface thread, and thousands of repeated `_a ` take many seconds. See "Later" in `TODO.md`.

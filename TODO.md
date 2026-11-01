@@ -35,6 +35,10 @@ Each of these waits for the maintainer's go-ahead.
 
 - [x] Document Linux commands, the one Windows-only Rust test, and `windows-latest` CI in `AGENTS.md`
 
+## Caption bar
+
+- [x] Make the toolbar the top of the window, with the file name, find, and the window buttons
+
 ## Later
 
 Out of scope for v0.1.0. Each needs a decision before work starts.

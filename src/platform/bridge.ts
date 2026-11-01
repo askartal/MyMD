@@ -20,6 +20,11 @@ export interface Bridge {
   isBrowser: boolean;
   showWindow(): Promise<void>;
   setTitle(title: string): Promise<void>;
+  minimize(): Promise<void>;
+  toggleMaximize(): Promise<void>;
+  close(): Promise<void>;
+  isMaximized(): Promise<boolean>;
+  onResized(handler: () => void): void;
   initialPath(): Promise<string | null>;
   readDocument(path: string): Promise<DocumentData>;
   listFolder(folder: string): Promise<FileEntry[]>;
@@ -37,6 +42,13 @@ const tauriBridge: Bridge = {
   isBrowser: false,
   showWindow: () => getCurrentWindow().show(),
   setTitle: (title) => getCurrentWindow().setTitle(title),
+  minimize: () => getCurrentWindow().minimize(),
+  toggleMaximize: () => getCurrentWindow().toggleMaximize(),
+  close: () => getCurrentWindow().close(),
+  isMaximized: () => getCurrentWindow().isMaximized(),
+  onResized(handler) {
+    void getCurrentWindow().onResized(() => handler());
+  },
   initialPath: () => invoke('initial_path'),
   readDocument: (path) => invoke('read_document', { path }),
   listFolder: (folder) => invoke('list_folder', { path: folder }),
@@ -70,6 +82,11 @@ const browserBridge: Bridge = {
   async setTitle(title) {
     document.title = title;
   },
+  minimize: async () => {},
+  toggleMaximize: async () => {},
+  close: async () => {},
+  isMaximized: async () => false,
+  onResized: () => {},
   async initialPath() {
     if (new URLSearchParams(location.search).has('empty')) return null;
     return (await loadFixtures()).fixtures[0].path;

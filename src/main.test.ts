@@ -11,6 +11,11 @@ const fake = vi.hoisted(() => {
     isBrowser: false,
     showWindow: async () => {},
     setTitle: async () => {},
+    minimize: async () => {},
+    toggleMaximize: async () => {},
+    close: async () => {},
+    isMaximized: async () => false,
+    onResized: () => {},
     initialPath: async () => 'C:\\n\\a.md',
     async readDocument(path: string) {
       const text = documents.get(path);
@@ -127,6 +132,23 @@ describe('a link to a file that is not there', () => {
     expect(pageText()).toContain('Doc A');
     expect(element('doc').hidden).toBe(false);
     expect(element('doc-name').textContent).toBe('a.md');
+  });
+});
+
+describe('the top bar', () => {
+  it('holds the file name above the page, and find stays in the bar', () => {
+    const input = element('find-input') as HTMLInputElement;
+    expect(element('panel').contains(element('topbar'))).toBe(false);
+    expect(element('topbar').contains(element('doc-name'))).toBe(true);
+    expect(element('doc-name').textContent).toBe('a.md');
+    expect(element('find-slot').hidden).toBe(false);
+    expect(input.disabled).toBe(false);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true }));
+    expect(document.activeElement).toBe(input);
+    input.value = 'doc';
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(input.value).toBe('');
+    expect(document.activeElement).not.toBe(input);
   });
 });
 

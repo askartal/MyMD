@@ -65,7 +65,9 @@
   --sidebar-w: 248px;
   --measure: 720px;
   --topbar-h: 48px;
-  --find-w: 240px;
+  --find-w: 360px;
+  --caption-inset: 0px;
+  --caption-button: 46px;
   --control-sm: 28px;
   --control: 32px;
   --control-lg: 40px;

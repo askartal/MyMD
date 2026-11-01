@@ -31,7 +31,7 @@ To make MyMD open Markdown files when you double-click them, right-click a `.md`
 | `Ctrl+B` | Show or hide the sidebar |
 | `Ctrl+F` | Find on the page |
 | `Enter`, `Shift+Enter` | Next and previous match |
-| `Esc` | Close find or the sidebar drawer |
+| `Esc` | Clear the search, or close the sidebar drawer |
 | `Up`, `Down`, `J`, `K`, `Enter` | Move through and open sidebar items |
 | `Ctrl+Plus`, `Ctrl+Minus`, `Ctrl+0` | Zoom in, zoom out and reset |
 

@@ -4,6 +4,10 @@ User-visible changes to MyMD. The format follows [Keep a Changelog](https://keep
 
 ## [Unreleased]
 
+### Changed
+
+- The top of the window is the toolbar: the file name, find, and the window buttons sit there, and the page starts below them
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

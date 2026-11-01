@@ -13,8 +13,9 @@ MyMD uses the Soft Order look: calm, soft and precise, with a frosted glass wind
 
 - The whole window uses the Windows Acrylic backdrop with the `--glass` tint.
 - With transparency effects off, the background is solid `--canvas`.
-- The reading panel is always solid `--surface`, with radius `--r-xl`.
-- The title bar stays native.
+- There is no separate caption strip. The toolbar is the top edge: the sidebar toggle, the file name, find, and minimize, maximize and close.
+- Those window buttons are the app's own, wired to the window. They are not a picture of someone else's chrome.
+- The reading panel is always solid `--surface`, with radius `--r-xl`, and it starts below the toolbar.
 
 ## Sidebar
 
