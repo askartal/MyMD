@@ -46,7 +46,7 @@ MyMD/
 │   ├── icons/                 Generated from app-icon.svg
 │   ├── app-icon.svg           Source icon
 │   └── tauri.conf.json        Window, security and installer settings
-├── AGENTS.md                  Points coding agents to CLAUDE.md
+├── AGENTS.md                  How to run the repo; product rules stay in CLAUDE.md
 ├── CHANGELOG.md               User-visible changes
 ├── CLAUDE.md                  Instructions for coding agents
 ├── HANDOFF.md                 Current state and next step

@@ -1,6 +1,6 @@
 # Handoff
 
-**Last updated:** 2026-10-31
+**Last updated:** 2026-11-01
 
 Rewrite this file at the end of every session so the next one can start cold.
 
@@ -12,6 +12,7 @@ Rewrite this file at the end of every session so the next one can start cold.
 - The whole-branch review is done, and its Critical and Important findings are fixed and tested. Deferred minors are under "Later" in `TODO.md`.
 - The installer is `MyMD_0.1.0_x64-setup.exe`, 2.4 MiB, and it's installed on the development PC.
 - `origin` is https://github.com/askartal/MyMD, and the repository is public.
+- Cloud agents start from `AGENTS.md`. On Linux, `npm test` (149) and `npm run build` pass. `cargo test` compiles with rustc ≥ 1.90 and the WebKitGTK packages, and 13 of 14 tests pass. `args_give_first_markdown_as_absolute_path` needs Windows path joins, which `.github/workflows/ci.yml` covers on `windows-latest`. Acrylic, WebView2 and the NSIS installer stay Windows-only.
 
 ## Next step
 
