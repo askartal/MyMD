@@ -1,37 +1,47 @@
 # Handoff
 
-**Last updated:** 2026-11-01
+**Last updated:** 2026-11-02
 
 Rewrite this file at the end of every session so the next one can start cold.
 
 ## Current state
 
-- The window is undecorated. The toolbar is the top edge and holds the file name, find, and minimize, maximize and close. This is not committed. Tauri cannot overlay the page under the native Windows caption.
-- All 11 plan tasks are built and merged into `main`, which is pushed to GitHub, and CI passes.
 - `v0.1.0` is published: https://github.com/askartal/MyMD/releases/tag/v0.1.0
-- TypeScript tests and 14 Rust tests pass, and `npm run build` and `npm run tauri build` both finish. Rust sources are untouched.
-- The whole-branch review is done, and its Critical and Important findings are fixed and tested. The four reading-session items ([docs/superpowers/plans/2026-11-01-reading-session-fixes.md](docs/superpowers/plans/2026-11-01-reading-session-fixes.md)) and window toolbar are built and tested. The other deferred items stay under "Deferred" in `TODO.md`.
-- Visual and interface polish is complete: refined `--glass`, `--sel` and `--seg` contrast in `src/styles/tokens.css`, added subtle `--border` and `--e-2` elevation to `#panel`, aligned sidebar and topbar spacing, differentiated Outline heading hierarchy (`data-level="1|2|3"`), added borders to tables/code blocks/blockquotes, elevated the empty state notice card, and refreshed `src-tauri/app-icon.svg` and generated icons.
-- The installer is `MyMD_0.1.0_x64-setup.exe`, 2.4 MiB, and it's installed on the development PC.
-- `origin` is https://github.com/askartal/MyMD, and the repository is public.
-- Cloud agents start from `AGENTS.md`. On Linux, `npm test` (163) and `npm run build` pass. `cargo test` compiles with rustc ≥ 1.90 and the WebKitGTK packages, and 13 of 14 tests pass. `args_give_first_markdown_as_absolute_path` needs Windows path joins, which `.github/workflows/ci.yml` covers on `windows-latest`. Acrylic, WebView2 and the NSIS installer stay Windows-only.
+- `main` holds unreleased work since `v0.1.0`, listed under "Unreleased" in `CHANGELOG.md`:
+  - The window is undecorated, and the toolbar is its top edge. It holds the sidebar toggle, the file name, find, and minimize, maximize and close. See decision 022.
+  - The four [reading-session fixes](docs/superpowers/plans/2026-11-01-reading-session-fixes.md) are built and tested.
+  - Interface polish: glass and panel contrast, the outline's heading levels, borders on prose and code blocks, the empty state and the app icon.
+- The maintainer has confirmed every check that needs a person. See "Maintainer checks" below.
+- On Windows, 164 TypeScript tests, 14 Rust tests and `npm run build` pass, checked on 2026-11-02.
+- The local installer, `src-tauri/target/release/bundle/nsis/MyMD_0.1.0_x64-setup.exe`, was rebuilt on 2026-11-01 after the toolbar change. Its version is still 0.1.0.
+- Cloud agents start from `AGENTS.md`. On Linux, `npm test` and `npm run build` pass. `cargo test` needs rustc 1.90 or later and the WebKitGTK packages, and 13 of its 14 tests pass there. `args_give_first_markdown_as_absolute_path` needs Windows path joins, which CI covers on `windows-latest`. Acrylic, WebView2 and the NSIS installer are Windows-only.
+- `origin` is https://github.com/askartal/MyMD, and the repository is public. The `cursor/*` branches on GitHub are all merged into `main`.
 
 ## Next step
 
-The window toolbar and the reading-session fixes are merged into main. The next batch is under "Not in this plan" at the end of docs/superpowers/plans/2026-11-01-reading-session-fixes.md (trust-boundary work before another release, release workflow hardening, and out-of-scope features waiting on a decision).
+Start the "Documents are untrusted" batch under "Not in this plan" at the end of the [reading-session plan](docs/superpowers/plans/2026-11-01-reading-session-fixes.md). It comes before another release:
+
+- Render Markdown off the interface thread, with a timeout
+- Turn on DOMPurify's `SANITIZE_NAMED_PROPS`
+- Add `base-uri`, `form-action` and `object-src` to the content security policy, and a Rust navigation guard
+- Run `allow_images` and `watch_folder` as async commands
+
+"The next tag" batch follows: harden `release.yml` and remove `serde_json`. Each batch gets its own plan.
 
 ## Waiting on the maintainer
 
-- Judge the items in "Checks only a person can make" below
+- Nothing blocks the next batch. The features under "Later" in `TODO.md` each need a decision before work starts.
 
-## Checks only a person can make
+## Maintainer checks
 
-- Acrylic stays smooth while dragging and resizing. If it lags, change `acrylic` to `mica` in `tauri.conf.json` and record it in `docs/DECISIONS.md`.
-- The undecorated window: the toolbar drags, a double-click on an empty part maximizes, minimize and close work, resize still works, and Acrylic and the rounded corners still look right. The Snap Layouts flyout will not appear on the maximize button. Check light mode as well as dark.
+The maintainer confirmed these on 2026-11-02, on the development PC:
+
+- Acrylic stays smooth while dragging and resizing, so it stays (decision 007).
+- The undecorated window: the toolbar drags, a double-click on an empty part maximizes, minimize, close and resize work, and Acrylic and the rounded corners look right, in light and dark mode.
 - The sidebar stays readable over light and dark wallpaper.
 - Turning off Windows transparency effects gives the solid canvas.
 - Light and dark follow the Windows setting when it changes.
-- Double-clicking a `.md` file after choosing **Open with → Always**. The launch itself was tested by passing the file path, which is what Explorer does.
+- Double-clicking a `.md` file after choosing **Open with → Always** opens it in MyMD.
 
 ## Development environment
 
@@ -53,11 +63,11 @@ The browser pane doesn't paint reliably while it's hidden, so layout captures ar
 
 ## Known risks
 
-- **Acrylic may lag** while dragging or resizing, and this Windows build is one where that's known to happen.
-- **Snap Layouts do not appear on the maximize button.** The window is undecorated so the toolbar can be the top edge. Dragging to a screen edge may still snap. An undecorated window with `shadow: true` can also show a 1 px border; if that looks wrong, set `shadow` to `false` in `tauri.conf.json` and record it here.
+- **Snap Layouts don't appear on the maximize button.** The window is undecorated so the toolbar can be its top edge (decision 022). Dragging to a screen edge may still snap.
+- **Acrylic can lag on some Windows builds.** It's smooth on the development PC. If users report lag, Mica is a one-word change in `tauri.conf.json` (decision 007).
 - **SmartScreen warns on downloaded installers** because releases aren't code-signed. The README explains this.
 - **A live refresh waits for any load in flight.** A read that hangs, such as on a dead network share, holds back refreshes until it fails.
-- **A pathological document can freeze the window.** Rendering runs on the interface thread, and thousands of repeated `_a ` take many seconds. See "Later" in `TODO.md`.
+- **A pathological document can freeze the window.** Rendering runs on the interface thread, and thousands of repeated `_a ` take many seconds. This is the first item in the next batch.
 - **Don't run `create-tauri-app` in this folder.** It can clear a non-empty folder.
 
 ## Task results

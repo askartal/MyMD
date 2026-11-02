@@ -28,7 +28,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 007: Acrylic for the glass, with Mica as the fallback
 
-**Accepted, 2026-10-31.** Acrylic gives real frosted glass by blurring what's behind the window. It can lag on some Windows builds, so Task 1 tests it. Mica is a one-word configuration change. On the development PC (Windows 11 build 26300), Acrylic renders correctly and the title bar shows the same glass. Smoothness while dragging and resizing needs a person to judge, so it stays open until they confirm it.
+**Accepted, 2026-10-31.** Acrylic gives real frosted glass by blurring what's behind the window. It can lag on some Windows builds, so Task 1 tests it. Mica is a one-word configuration change. On the development PC (Windows 11 build 26300), Acrylic renders correctly and the title bar shows the same glass. On 2026-11-02 the maintainer confirmed it stays smooth while dragging and resizing, so Acrylic stays.
 
 ## 008: Solid reading panel
 
@@ -88,7 +88,7 @@ Why MyMD is the way it is. Add new decisions at the end. To reverse one, add a n
 
 ## 022: The toolbar is the top of the window
 
-**Accepted, 2026-11-01.** This replaces 009 and refines 019. Tauri's overlaid caption is macOS-only, so on Windows the window is undecorated and the toolbar is the top edge. It holds the sidebar toggle, the file name, find, and minimize, maximize and close. Find stays visible, still an input and a count, with no next or previous buttons. `Ctrl+F` focuses it and `Esc` clears it. The cost is the Snap Layouts flyout on the maximize button. Dragging an empty part of the bar still moves the window, and a double-click there still maximizes.
+**Accepted, 2026-11-01.** This replaces 009 and refines 019. Tauri's overlaid caption is macOS-only, so on Windows the window is undecorated and the toolbar is the top edge. It holds the sidebar toggle, the file name, find, and minimize, maximize and close. Find stays visible, still an input and a count, with no next or previous buttons. `Ctrl+F` focuses it and `Esc` clears it. The cost is the Snap Layouts flyout on the maximize button. Dragging an empty part of the bar still moves the window, and a double-click there still maximizes. The maintainer confirmed the undecorated window in light and dark mode on 2026-11-02.
 
 ## 023: Reading session fixes
 
