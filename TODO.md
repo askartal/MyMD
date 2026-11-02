@@ -74,3 +74,7 @@ Small issues the final review found. None blocks a release.
 - Run tests in `release.yml`, check the tag against the version, and pin actions to commit hashes
 - Add `base-uri`, `form-action` and `object-src` to the content security policy, and a Rust navigation guard
 - Remove `serde_json` from `Cargo.toml` if nothing needs it
+
+## Before the next tag
+
+- Retake `docs/screenshot.png`, which shows the window from before the toolbar change
