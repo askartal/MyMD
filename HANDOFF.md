@@ -11,9 +11,10 @@ Rewrite this file at the end of every session so the next one can start cold.
   - The window is undecorated, and the toolbar is its top edge. It holds the sidebar toggle, the file name, find, and minimize, maximize and close. See decision 022.
   - The four [reading-session fixes](docs/superpowers/plans/2026-11-01-reading-session-fixes.md) are built and tested.
   - Interface polish: glass and panel contrast, the outline's heading levels, borders on prose and code blocks, the empty state and the app icon.
+  - Even toolbar spacing, from 2026-11-02. The controls have 8 px above and below, find is centered on the window, and the toggle, the sidebar and the panel all start at the same 8 px gutter. It was checked in headless Edge in light and dark mode at 1280, 900 and 700 px. It hasn't been seen in the real window yet.
 - The maintainer has confirmed every check that needs a person. See "Maintainer checks" below.
 - On Windows, 164 TypeScript tests, 14 Rust tests and `npm run build` pass, checked on 2026-11-02.
-- The local installer, `src-tauri/target/release/bundle/nsis/MyMD_0.1.0_x64-setup.exe`, was rebuilt on 2026-11-01 after the toolbar change. Its version is still 0.1.0.
+- The local installer, `src-tauri/target/release/bundle/nsis/MyMD_0.1.0_x64-setup.exe`, was rebuilt on 2026-11-01 after the toolbar change, so it doesn't have the spacing fix. Its version is still 0.1.0.
 - Cloud agents start from `AGENTS.md`. On Linux, `npm test` and `npm run build` pass. `cargo test` needs rustc 1.90 or later and the WebKitGTK packages, and 13 of its 14 tests pass there. `args_give_first_markdown_as_absolute_path` needs Windows path joins, which CI covers on `windows-latest`. Acrylic, WebView2 and the NSIS installer are Windows-only.
 - `origin` is https://github.com/askartal/MyMD, and the repository is public. The `cursor/*` branches on GitHub are all merged into `main`.
 

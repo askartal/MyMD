@@ -15,6 +15,7 @@ User-visible changes to MyMD. The format follows [Keep a Changelog](https://keep
 - The sidebar drawer closes for Ctrl+O, a dropped file and a second launch
 - Find starts at the first match when a different file opens, and keeps its place across a save
 - A link to a named anchor or any element id scrolls to it
+- The toolbar's spacing is even: its controls sit midway between the window's top edge and the reading panel, find is centered on the window, and the toolbar, sidebar and panel share one left edge
 
 ## [0.1.0] - 2026-10-31
 
